@@ -37,7 +37,6 @@ class Employee(Base):
     date_of_birth = Column(Date, nullable=True)
 
     
-
     position = Column(String(100), nullable=False)
 
     joined_date = Column(Date, nullable=False)

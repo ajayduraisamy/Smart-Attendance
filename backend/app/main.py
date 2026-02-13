@@ -16,7 +16,22 @@ app = FastAPI(
     title="Smart Attendance System",
     version="1.0.0"
 )
+from fastapi.middleware.cors import CORSMiddleware
 
+
+
+
+origins = [
+    "http://localhost:5174",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Create tables
 user.Base.metadata.create_all(bind=engine)
