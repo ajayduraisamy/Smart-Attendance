@@ -1,138 +1,106 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useAuth } from './context/AuthContext';
-import {
-  Login,
-  Register,
-  Landing,
-  Services,
-  About,
-  Contact,
-  Dashboard,
-  Employees,
-  Attendance,
-  Reports,
-  Leaves,
-  Settings,
-  Profile,
-  Offices,
-  Devices,
-  Users,
-} from './pages';
-
-// Protected Route Component
-function ProtectedRoute({ children, requiredRole }) {
-  const { token, user } = useAuth();
-
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
-
-  if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return children;
-}
+﻿import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './auth/AuthContext';
+import ProtectedRoute from './routes/ProtectedRoute';
+import RoleRedirect from './routes/RoleRedirect';
+import PublicLayout from './components/PublicLayout';
+import DashboardLayout from './components/DashboardLayout';
+import LandingPage from './features/Landing';
+import LoginPage from './features/Login';
+import SignupPage from './features/Signup';
+import AttendancePage from './features/Attendance';
+import EmployeesPage from './features/Employees';
+import DevicesPage from './features/Devices';
+import OfficesPage from './features/Offices';
+import LeavesPage from './features/Leaves';
+import ReportsPage from './features/Reports';
+import BiometricsPage from './features/Biometrics';
+import { AdminDashboard, HRDashboard, EmployeeDashboard } from './features/RoleDashboards';
+import { ROLES } from './config/roles';
 
 export default function App() {
-  const { token } = useAuth();
-
   return (
-    <Router>
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Landing />} />
-        <Route path="/services" element={<Services />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Public pages */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/services" element={<LandingPage section="services" />} />
+            <Route path="/about" element={<LandingPage section="about" />} />
+            <Route path="/contact" element={<LandingPage section="contact" />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/signup" element={<SignupPage />} />
+          </Route>
 
-        {/* Protected Routes */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/employees"
-          element={
-            <ProtectedRoute>
-              <Employees />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/attendance"
-          element={
-            <ProtectedRoute>
-              <Attendance />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/reports"
-          element={
-            <ProtectedRoute>
-              <Reports />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/leaves"
-          element={
-            <ProtectedRoute>
-              <Leaves />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <ProtectedRoute>
-              <Settings />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <ProtectedRoute>
-              <Profile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/offices"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <Offices />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/devices"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <Devices />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/users"
-          element={
-            <ProtectedRoute requiredRole="admin">
-              <Users />
-            </ProtectedRoute>
-          }
-        />
+          {/* Authenticated app */}
+          <Route
+            path="/app"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<RoleRedirect />} />
+            <Route path="admin" element={<ProtectedRoute allowedRoles={[ROLES.ADMIN]}><AdminDashboard /></ProtectedRoute>} />
+            <Route path="hr" element={<ProtectedRoute allowedRoles={[ROLES.HR]}><HRDashboard /></ProtectedRoute>} />
+            <Route path="employee" element={<ProtectedRoute><EmployeeDashboard /></ProtectedRoute>} />
+            <Route path="attendance" element={<AttendancePage />} />
+            <Route
+              path="employees"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+                  <EmployeesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="devices"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+                  <DevicesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="offices"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+                  <OfficesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="leaves"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.HR]}>
+                  <LeavesPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="reports"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.HR]}>
+                  <ReportsPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="biometrics"
+              element={
+                <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
+                  <BiometricsPage />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
 
-        {/* Fallback Routes */}
-        <Route path="*" element={token ? <Navigate to="/dashboard" replace /> : <Navigate to="/" replace />} />
-      </Routes>
-    </Router>
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

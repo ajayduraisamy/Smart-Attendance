@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import func, extract
 from datetime import date
 
 from app.database import get_db
@@ -14,63 +15,73 @@ router = APIRouter(
 )
 
 
-# -----------------------------
+# ==============================
 # Daily Summary
-# -----------------------------
+# ==============================
 @router.get("/daily-summary")
 def daily_summary(
     report_date: date,
     db: Session = Depends(get_db),
     user=Depends(get_current_user)
 ):
+    try:
+        # Total active employees
+        total = db.query(Employee).filter(
+            Employee.status == True
+        ).count()
 
-    total = db.query(Employee).filter(
-        Employee.status == True
-    ).count()
+        # Distinct employees marked IN on that date
+        present = db.query(Attendance.emp_id).filter(
+            func.date(Attendance.date) == report_date,
+            Attendance.type == "IN"
+        ).distinct().count()
 
-    present = db.query(Attendance).filter(
-        Attendance.date == report_date,
-        Attendance.type == "IN"
-    ).count()
+        absent = total - present
 
-    absent = total - present
+        return {
+            "date": report_date,
+            "total_employees": total,
+            "present": present,
+            "absent": absent
+        }
 
-    return {
-        "date": report_date,
-        "total_employees": total,
-        "present": present,
-        "absent": absent
-    }
+    except Exception as e:
+        print("DAILY SUMMARY ERROR:", e)
+        raise HTTPException(status_code=500, detail="Failed to generate summary")
 
 
-# -----------------------------
-# Absent Employees
-# -----------------------------
+# ==============================
+# Absent Employees List
+# ==============================
 @router.get("/absent-list")
 def absent_list(
     report_date: date,
     db: Session = Depends(get_db),
     user=Depends(get_current_user)
 ):
+    try:
+        # Get emp_ids who are present
+        present_ids = db.query(Attendance.emp_id).filter(
+            func.date(Attendance.date) == report_date,
+            Attendance.type == "IN"
+        ).subquery()
 
-    present_ids = db.query(
-        Attendance.emp_id
-    ).filter(
-        Attendance.date == report_date,
-        Attendance.type == "IN"
-    ).subquery()
+        # IMPORTANT: use emp_id, NOT id
+        absent = db.query(Employee).filter(
+            Employee.status == True,
+            ~Employee.emp_id.in_(present_ids)
+        ).all()
 
-    absent = db.query(Employee).filter(
-        Employee.status == True,
-        Employee.id.notin_(present_ids)
-    ).all()
+        return absent
 
-    return absent
+    except Exception as e:
+        print("ABSENT ERROR:", e)
+        raise HTTPException(status_code=500, detail="Failed to get absent list")
 
 
-# -----------------------------
+# ==============================
 # Monthly Report
-# -----------------------------
+# ==============================
 @router.get("/monthly")
 def monthly_report(
     year: int,
@@ -78,12 +89,14 @@ def monthly_report(
     db: Session = Depends(get_db),
     user=Depends(get_current_user)
 ):
+    try:
+        data = db.query(Attendance).filter(
+            extract("year", Attendance.date) == year,
+            extract("month", Attendance.date) == month
+        ).all()
 
-    data = db.query(Attendance).filter(
-        Attendance.date.between(
-            f"{year}-{month:02d}-01",
-            f"{year}-{month:02d}-31"
-        )
-    ).all()
+        return data
 
-    return data
+    except Exception as e:
+        print("MONTHLY ERROR:", e)
+        raise HTTPException(status_code=500, detail="Failed to get monthly report")

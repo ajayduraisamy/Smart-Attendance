@@ -2,6 +2,6 @@
 
 DB_HOST = "localhost"
 DB_PORT = "5432"
-DB_NAME = "attendance_db"
+DB_NAME = "attendance_db_new"
 DB_USER = "postgres"
 DB_PASSWORD = "Ajaycode"
