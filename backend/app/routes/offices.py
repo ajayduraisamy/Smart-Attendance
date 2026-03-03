@@ -48,3 +48,42 @@ def list_offices(
 ):
 
     return db.query(Office).all()
+
+
+@router.put("/{office_id}", response_model=OfficeOut)
+def update_office(
+    office_id: int,
+    data: OfficeCreate,
+    db: Session = Depends(get_db),
+    user=Depends(require_role("admin"))
+):
+    office = db.query(Office).filter(Office.id == office_id).first()
+
+    if not office:
+        raise HTTPException(status_code=404, detail="Office not found")
+
+    office.name = data.name
+    office.location = data.location
+    office.status = data.status
+
+    db.commit()
+    db.refresh(office)
+
+    return office
+
+
+@router.delete("/{office_id}")
+def delete_office(
+    office_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(require_role("admin"))
+):
+    office = db.query(Office).filter(Office.id == office_id).first()
+
+    if not office:
+        raise HTTPException(status_code=404, detail="Office not found")
+
+    office.status = False  # soft delete
+    db.commit()
+
+    return {"message": "Office deactivated successfully"}

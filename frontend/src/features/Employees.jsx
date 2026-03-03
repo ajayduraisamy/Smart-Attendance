@@ -13,7 +13,7 @@ export default function EmployeesPage() {
     setLoading(true);
     setError('');
     try {
-      const res = await client.get('/employees');
+      const res = await client.get('/employees/');
       setList(res.data);
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to load employees (admin only)');

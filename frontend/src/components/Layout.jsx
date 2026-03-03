@@ -116,12 +116,15 @@ export default function Layout() {
 
   const navigationItems = [
     { path: '/', label: 'Dashboard', icon: DashboardIcon, show: true },
+    { path: '/devices', label: 'Devices', icon: DevicesIcon, show: isAdmin },
+    { path: '/employees', label: 'Employees', icon: EmployeesIcon, show: isAdmin },
+     { path: '/offices', label: 'Offices', icon: OfficesIcon, show: isAdmin },
     { path: '/attendance', label: 'Attendance', icon: AttendanceIcon, show: true },
     { path: '/leaves', label: 'Leaves', icon: LeavesIcon, show: isAdmin || isHR },
     { path: '/reports', label: 'Reports', icon: ReportsIcon, show: isAdmin || isHR },
-    { path: '/employees', label: 'Employees', icon: EmployeesIcon, show: isAdmin },
-    { path: '/devices', label: 'Devices', icon: DevicesIcon, show: isAdmin },
-    { path: '/offices', label: 'Offices', icon: OfficesIcon, show: isAdmin },
+    
+    
+   
     { path: '/biometrics', label: 'Biometrics', icon: BiometricsIcon, show: isAdmin },
   ].filter(item => item.show);
 

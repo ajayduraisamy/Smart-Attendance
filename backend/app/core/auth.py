@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordBearer
 
 SECRET_KEY = "attendance_secret_2026"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 600
+ACCESS_TOKEN_EXPIRE_MINUTES = 900
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")

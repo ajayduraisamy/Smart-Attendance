@@ -1,9 +1,8 @@
 from datetime import date
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 class EmployeeCreate(BaseModel):
-
     emp_id: str
     name: str
     email: EmailStr | None = None
@@ -14,7 +13,6 @@ class EmployeeCreate(BaseModel):
 
 
 class EmployeeUpdate(BaseModel):
-
     name: str | None = None
     email: EmailStr | None = None
     phone: str | None = None
@@ -24,6 +22,7 @@ class EmployeeUpdate(BaseModel):
 
 
 class EmployeeOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
 
     id: int
     emp_id: str
@@ -34,6 +33,3 @@ class EmployeeOut(BaseModel):
     joined_date: date
     status: bool
     office_id: int | None
-
-    class Config:
-        orm_mode = True

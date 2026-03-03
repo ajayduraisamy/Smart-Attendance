@@ -255,18 +255,18 @@ export default function DashboardLayout() {
         <MenuIcon className="w-6 h-6" />
       </button>
 
-      {/* Floating Toggle Button for Collapsed Sidebar (Desktop) */}
+   
       {!isSidebarOpen && !isHovered && (
         <button
           onClick={toggleSidebar}
-          className="hidden md:flex fixed left-17 top-7 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50"
+          className="hidden md:flex fixed left-22 top-7 transform -translate-y-1/2 bg-gradient-to-r from-blue-600 to-purple-600 text-white p-2 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 z-50"
           title="Expand sidebar"
         >
           <ChevronRightIcon className="w-5 h-5" />
         </button>
       )}
 
-      {/* Main Content */}
+      
       <main className={`flex-1 transition-all duration-300 ${isSidebarOpen ? 'md:ml-0' : 'md:ml-0'}`}>
         <div className="p-4 md:p-6 lg:p-8">
           <Outlet />
