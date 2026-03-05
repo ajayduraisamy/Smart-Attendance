@@ -11,7 +11,7 @@ from app.database import engine
 from app.models import attendance, device, employee, leave, office, user
 
 # Routes
-from app.routes import biometrics, devices, employees, leaves, offices, reports, users
+from app.routes import biometrics, devices, employees, leaves, offices, reports, users, hardware
 from app.routes import attendance as attendance_router
 
 
@@ -72,7 +72,7 @@ app.include_router(offices.router)
 app.include_router(attendance_router.router)
 app.include_router(reports.router)
 app.include_router(leaves.router)
-
+app.include_router(hardware.router)
 
 @app.get("/")
 def root():
