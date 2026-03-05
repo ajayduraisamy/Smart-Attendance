@@ -1,28 +1,27 @@
 from datetime import date, time
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
+# Device Attendance Request
 class AttendanceMark(BaseModel):
 
     emp_id: str
-    emp_name: str
-    device_id: str
-    office_id: int | None = None
-    source: str = "ONLINE"   # ONLINE / OFFLINE
+    device_id: int
+    source: str = "ONLINE"  # ONLINE / OFFLINE
 
 
+# Attendance Response
 class AttendanceOut(BaseModel):
 
-    id: int
-    emp_id: str
-    emp_name: str
-    device_id: str
-    office_id: int | None
-    date: date
-    in_time: time | None
-    out_time: time | None
-    type: str
-    source: str
+    model_config = ConfigDict(from_attributes=True)
 
-    class Config:
-        orm_mode = True
+    id: int
+    employee_id: int
+    device_id: int
+    office_id: int
+
+    date: date
+    check_in: time | None
+    check_out: time | None
+
+    source: str

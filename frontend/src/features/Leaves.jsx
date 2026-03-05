@@ -1,57 +1,74 @@
-﻿import React, { useState } from 'react';
-import client from '../api/client';
+﻿import React, { useEffect, useState } from "react";
+import client from "../api/client";
 
-export default function LeavesPage() {
-  const [form, setForm] = useState({ emp_id: '', start_date: '', end_date: '', reason: '' });
-  const [message, setMessage] = useState('');
-  const [error, setError] = useState('');
+export default function LeavePage() {
+  const [leaves, setLeaves] = useState([]);
 
-  const submit = async (e) => {
-    e.preventDefault();
-    setMessage('');
-    setError('');
-    try {
-      await client.post('/leaves/apply', {
-        emp_id: Number(form.emp_id),
-        start_date: form.start_date,
-        end_date: form.end_date,
-        reason: form.reason,
-      });
-      setMessage('Leave applied');
-      setForm({ emp_id: '', start_date: '', end_date: '', reason: '' });
-    } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to apply');
-    }
+  const loadLeaves = async () => {
+    const res = await client.get("/leaves");
+    setLeaves(res.data);
   };
 
-  return (
-    <div className="space-y-4">
-      <h1 className="text-xl font-semibold text-slate-800">Leaves</h1>
-      <form className="grid gap-3 bg-white p-4 rounded-xl shadow-sm md:grid-cols-2" onSubmit={submit}>
-        <Field label="Employee ID (numeric)" value={form.emp_id} onChange={(v) => setForm({ ...form, emp_id: v })} required />
-        <Field label="Start Date" type="date" value={form.start_date} onChange={(v) => setForm({ ...form, start_date: v })} required />
-        <Field label="End Date" type="date" value={form.end_date} onChange={(v) => setForm({ ...form, end_date: v })} required />
-        <Field label="Reason" value={form.reason} onChange={(v) => setForm({ ...form, reason: v })} required />
-        {error && <p className="text-red-600 col-span-2">{error}</p>}
-        {message && <p className="text-green-600 col-span-2">{message}</p>}
-        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded-md">Apply Leave</button>
-      </form>
-      <p className="text-sm text-slate-600">Note: Approve/Reject APIs exist but listing leaves isn’t provided in backend; this form submits to /leaves/apply.</p>
-    </div>
-  );
-}
+  const approve = async (id) => {
+    await client.put(`/leaves/${id}/approve`);
+    loadLeaves();
+  };
 
-function Field({ label, value, onChange, type = 'text', required }) {
+  const reject = async (id) => {
+    await client.put(`/leaves/${id}/reject`);
+    loadLeaves();
+  };
+
+  useEffect(() => {
+    loadLeaves();
+  }, []);
+
   return (
-    <label className="text-sm text-slate-700 space-y-1 block">
-      <span className="block">{label}{required ? ' *' : ''}</span>
-      <input
-        type={type}
-        value={value}
-        required={required}
-        onChange={(e) => onChange(e.target.value)}
-        className="w-full border border-slate-300 rounded-md px-3 py-2"
-      />
-    </label>
+    <div>
+      <h1 className="text-xl font-semibold mb-4">Leave Requests</h1>
+
+      <table className="w-full bg-white shadow-sm rounded-xl">
+        <thead>
+          <tr className="text-left border-b">
+            <th className="p-3">Employee</th>
+            <th className="p-3">Start</th>
+            <th className="p-3">End</th>
+            <th className="p-3">Reason</th>
+            <th className="p-3">Status</th>
+            <th className="p-3">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {leaves.map((l) => (
+            <tr key={l.id} className="border-b">
+
+              <td className="p-3">{l.emp_id}</td>
+              <td className="p-3">{l.start_date}</td>
+              <td className="p-3">{l.end_date}</td>
+              <td className="p-3">{l.reason}</td>
+              <td className="p-3">{l.status}</td>
+
+              <td className="p-3 space-x-2">
+                <button
+                  onClick={() => approve(l.id)}
+                  className="bg-green-600 text-white px-3 py-1 rounded"
+                >
+                  Approve
+                </button>
+
+                <button
+                  onClick={() => reject(l.id)}
+                  className="bg-red-600 text-white px-3 py-1 rounded"
+                >
+                  Reject
+                </button>
+              </td>
+
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }

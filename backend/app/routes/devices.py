@@ -8,13 +8,14 @@ from app.database import get_db
 from app.models.device import Device
 from app.models.employee import Employee
 from app.models.office import Office
-from app.schemas.device import DeviceCreate, DeviceOut, DeviceVerify
+from app.schemas.device import DeviceCreate, DeviceOut, DeviceVerify, DeviceUpdate
 from app.core.auth import require_role
 
 router = APIRouter(
     prefix="/devices",
     tags=["Devices"]
 )
+
 
 # =====================================================
 # Admin: Create Device
@@ -25,6 +26,7 @@ def create_device(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
+
     existing = db.query(Device).filter(
         Device.device_id == data.device_id
     ).first()
@@ -32,14 +34,14 @@ def create_device(
     if existing:
         raise HTTPException(status_code=400, detail="Device ID already exists")
 
-    # Validate office if provided
-    if data.office_id:
-        office = db.query(Office).filter(
-            Office.id == data.office_id,
-            Office.status == True
-        ).first()
-        if not office:
-            raise HTTPException(status_code=400, detail="Invalid office")
+    # Validate office
+    office = db.query(Office).filter(
+        Office.id == data.office_id,
+        Office.status == True
+    ).first()
+
+    if not office:
+        raise HTTPException(status_code=400, detail="Invalid office")
 
     api_key = secrets.token_hex(32)
 
@@ -47,8 +49,7 @@ def create_device(
         device_id=data.device_id,
         office_id=data.office_id,
         api_key=api_key,
-        status=True,
-        created_at=datetime.utcnow()
+        status=True
     )
 
     db.add(device)
@@ -66,6 +67,7 @@ def get_devices(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
+
     return db.query(Device).all()
 
 
@@ -78,6 +80,7 @@ def get_device(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
+
     device = db.query(Device).filter(
         Device.device_id == device_id
     ).first()
@@ -89,15 +92,16 @@ def get_device(
 
 
 # =====================================================
-# Admin: Update Device Office
+# Admin: Update Device
 # =====================================================
 @router.put("/{device_id}", response_model=DeviceOut)
 def update_device(
     device_id: str,
-    data: DeviceCreate,
+    data: DeviceUpdate,
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
+
     device = db.query(Device).filter(
         Device.device_id == device_id
     ).first()
@@ -105,16 +109,21 @@ def update_device(
     if not device:
         raise HTTPException(status_code=404, detail="Device not found")
 
-    # Validate office
-    if data.office_id:
+    if data.office_id is not None:
+
         office = db.query(Office).filter(
             Office.id == data.office_id,
             Office.status == True
         ).first()
+
         if not office:
             raise HTTPException(status_code=400, detail="Invalid office")
 
-    device.office_id = data.office_id
+        device.office_id = data.office_id
+
+    if data.status is not None:
+        device.status = data.status
+
     db.commit()
     db.refresh(device)
 
@@ -122,7 +131,7 @@ def update_device(
 
 
 # =====================================================
-# Admin: Enable / Disable Device (Soft Delete)
+# Admin: Enable / Disable Device
 # =====================================================
 @router.put("/{device_id}/status")
 def update_device_status(
@@ -131,6 +140,7 @@ def update_device_status(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
+
     device = db.query(Device).filter(
         Device.device_id == device_id
     ).first()
@@ -139,6 +149,7 @@ def update_device_status(
         raise HTTPException(status_code=404, detail="Device not found")
 
     device.status = status
+
     db.commit()
 
     return {"message": "Device status updated"}
@@ -153,6 +164,7 @@ def delete_device(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
+
     device = db.query(Device).filter(
         Device.device_id == device_id
     ).first()
@@ -161,6 +173,7 @@ def delete_device(
         raise HTTPException(status_code=404, detail="Device not found")
 
     device.status = False
+
     db.commit()
 
     return {"message": "Device deactivated successfully"}
@@ -175,6 +188,7 @@ def regenerate_api_key(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
+
     device = db.query(Device).filter(
         Device.device_id == device_id
     ).first()
@@ -183,6 +197,7 @@ def regenerate_api_key(
         raise HTTPException(status_code=404, detail="Device not found")
 
     device.api_key = secrets.token_hex(32)
+
     db.commit()
     db.refresh(device)
 
@@ -197,6 +212,7 @@ def verify_device(
     data: DeviceVerify,
     db: Session = Depends(get_db)
 ):
+
     device = db.query(Device).filter(
         Device.device_id == data.device_id,
         Device.api_key == data.api_key,
@@ -207,6 +223,7 @@ def verify_device(
         raise HTTPException(status_code=401, detail="Invalid device credentials")
 
     device.last_seen = datetime.utcnow()
+
     db.commit()
 
     return {"message": "Device verified"}
@@ -221,6 +238,7 @@ def sync_data(
     api_key: str,
     db: Session = Depends(get_db)
 ):
+
     device = db.query(Device).filter(
         Device.device_id == device_id,
         Device.api_key == api_key,
@@ -231,23 +249,23 @@ def sync_data(
         raise HTTPException(status_code=401, detail="Invalid device")
 
     device.last_seen = datetime.utcnow()
+
     db.commit()
 
-    # Filter employees by same office
     employees = db.query(Employee).filter(
         Employee.status == True,
         Employee.office_id == device.office_id
     ).all()
 
-    result = [
-        {
+    result = []
+
+    for emp in employees:
+        result.append({
             "emp_id": emp.emp_id,
             "name": emp.name,
             "rfid_uid": emp.rfid_uid,
             "fingerprint_template": emp.fingerprint_template,
             "face_embedding": emp.face_embedding
-        }
-        for emp in employees
-    ]
+        })
 
     return {"employees": result}

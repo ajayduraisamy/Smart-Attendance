@@ -1,10 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.office import Office
-from app.schemas.office import OfficeCreate, OfficeOut
+from app.schemas.office import OfficeCreate, OfficeOut, OfficeUpdate
 from app.core.auth import require_role
+from app.services.office import (
+    create_office,
+    get_active_offices,
+    update_office,
+    deactivate_office
+)
 
 
 router = APIRouter(
@@ -13,77 +18,60 @@ router = APIRouter(
 )
 
 
-# Create Office (Admin only)
+# =====================================================
+# CREATE OFFICE (ADMIN ONLY)
+# =====================================================
 @router.post("/", response_model=OfficeOut)
-def create_office(
+def create_office_route(
     data: OfficeCreate,
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
-
-    existing = db.query(Office).filter(
-        Office.name == data.name
-    ).first()
-
-    if existing:
-        raise HTTPException(
-            status_code=400,
-            detail="Office already exists"
-        )
-
-    office = Office(**data.dict())
-
-    db.add(office)
-    db.commit()
-    db.refresh(office)
-
-    return office
+    return create_office(
+        name=data.name,
+        location=data.location,
+        db=db
+    )
 
 
-# List Offices
+# =====================================================
+# LIST ACTIVE OFFICES
+# =====================================================
 @router.get("/", response_model=list[OfficeOut])
 def list_offices(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
+    return get_active_offices(db)
 
-    return db.query(Office).all()
 
-
+# =====================================================
+# UPDATE OFFICE
+# =====================================================
 @router.put("/{office_id}", response_model=OfficeOut)
-def update_office(
+def update_office_route(
     office_id: int,
-    data: OfficeCreate,
+    data: OfficeUpdate,
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
-    office = db.query(Office).filter(Office.id == office_id).first()
-
-    if not office:
-        raise HTTPException(status_code=404, detail="Office not found")
-
-    office.name = data.name
-    office.location = data.location
-    office.status = data.status
-
-    db.commit()
-    db.refresh(office)
-
-    return office
+    return update_office(
+        office_id=office_id,
+        name=data.name,
+        location=data.location,
+        status=data.status,
+        db=db
+    )
 
 
+# =====================================================
+# SOFT DELETE
+# =====================================================
 @router.delete("/{office_id}")
-def delete_office(
+def delete_office_route(
     office_id: int,
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
-    office = db.query(Office).filter(Office.id == office_id).first()
-
-    if not office:
-        raise HTTPException(status_code=404, detail="Office not found")
-
-    office.status = False  # soft delete
-    db.commit()
-
+    deactivate_office(office_id, db)
     return {"message": "Office deactivated successfully"}

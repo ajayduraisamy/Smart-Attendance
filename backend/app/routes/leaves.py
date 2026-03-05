@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.leave import Leave
-from app.schemas.leave import LeaveCreate
+from app.models.employee import Employee
+from app.schemas.leave import LeaveCreate, LeaveOut, LeaveUpdateStatus
 from app.core.auth import get_current_user
 
 
@@ -13,28 +14,42 @@ router = APIRouter(
 )
 
 
+# =====================================================
 # Apply Leave
-@router.post("/apply")
+# =====================================================
+@router.post("/apply", response_model=LeaveOut)
 def apply_leave(
     data: LeaveCreate,
     db: Session = Depends(get_db),
     user=Depends(get_current_user)
 ):
 
+    employee = db.query(Employee).filter(
+        Employee.id == data.employee_id,
+        Employee.status == True
+    ).first()
+
+    if not employee:
+        raise HTTPException(404, "Employee not found")
+
     leave = Leave(
-        emp_id=data.emp_id,
+        employee_id=data.employee_id,
         start_date=data.start_date,
         end_date=data.end_date,
-        reason=data.reason
+        reason=data.reason,
+        leave_type=data.leave_type
     )
 
     db.add(leave)
     db.commit()
+    db.refresh(leave)
 
-    return {"message": "Leave Applied"}
+    return leave
 
 
-# Approve Leave (HR/Admin)
+# =====================================================
+# Approve Leave (HR / Admin)
+# =====================================================
 @router.put("/approve/{leave_id}")
 def approve_leave(
     leave_id: int,
@@ -46,14 +61,20 @@ def approve_leave(
         Leave.id == leave_id
     ).first()
 
+    if not leave:
+        raise HTTPException(404, "Leave request not found")
+
     leave.status = "APPROVED"
 
     db.commit()
 
-    return {"message": "Leave Approved"}
+    return {"message": "Leave approved"}
 
-# Reject Leave (HR/Admin)
-@router.put("/reject/{leave_id}")    
+
+# =====================================================
+# Reject Leave (HR / Admin)
+# =====================================================
+@router.put("/reject/{leave_id}")
 def reject_leave(
     leave_id: int,
     db: Session = Depends(get_db),
@@ -64,8 +85,38 @@ def reject_leave(
         Leave.id == leave_id
     ).first()
 
+    if not leave:
+        raise HTTPException(404, "Leave request not found")
+
     leave.status = "REJECTED"
 
     db.commit()
 
-    return {"message": "Leave Rejected"}        
+    return {"message": "Leave rejected"}
+
+
+# =====================================================
+# List All Leaves
+# =====================================================
+@router.get("/", response_model=list[LeaveOut])
+def list_leaves(
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+
+    return db.query(Leave).all()
+
+
+# =====================================================
+# Get Leaves By Employee
+# =====================================================
+@router.get("/employee/{employee_id}", response_model=list[LeaveOut])
+def get_employee_leaves(
+    employee_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user)
+):
+
+    return db.query(Leave).filter(
+        Leave.employee_id == employee_id
+    ).all()

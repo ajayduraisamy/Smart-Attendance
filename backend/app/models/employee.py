@@ -44,20 +44,36 @@ class Employee(Base):
     office_id = Column(
         Integer,
         ForeignKey("offices.id"),
-        nullable=True,
+        nullable=False,
         index=True
     )
 
     status = Column(Boolean, default=True)
 
     # Biometric Data
-    rfid_uid = Column(String(100), unique=True, nullable=True)
+    rfid_uid = Column(String(100), unique=True, nullable=True, index=True)
+
     fingerprint_template = Column(LargeBinary, nullable=True)
+
     face_embedding = Column(LargeBinary, nullable=True)
 
     # Relationships
-    office = relationship("Office", backref="employees")
+    office = relationship("Office", back_populates="employees")
+    #office = relationship("Office", backref="employees")
+
+    attendance_records = relationship(
+        "Attendance",
+        back_populates="employee",
+        cascade="all, delete"
+    )
 
     # Audit Fields
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
-    updated_at = Column(DateTime(timezone=True), onupdate=func.now())
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+
+    updated_at = Column(
+        DateTime(timezone=True),
+        onupdate=func.now()
+    )

@@ -113,20 +113,22 @@ export default function Layout() {
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
   }, [location]);
+const navigationItems = [
+  { path: '/', label: 'Dashboard', icon: DashboardIcon, show: true },
 
-  const navigationItems = [
-    { path: '/', label: 'Dashboard', icon: DashboardIcon, show: true },
-    { path: '/devices', label: 'Devices', icon: DevicesIcon, show: isAdmin },
-    { path: '/employees', label: 'Employees', icon: EmployeesIcon, show: isAdmin },
-     { path: '/offices', label: 'Offices', icon: OfficesIcon, show: isAdmin },
-    { path: '/attendance', label: 'Attendance', icon: AttendanceIcon, show: true },
-    { path: '/leaves', label: 'Leaves', icon: LeavesIcon, show: isAdmin || isHR },
-    { path: '/reports', label: 'Reports', icon: ReportsIcon, show: isAdmin || isHR },
-    
-    
-   
-    { path: '/biometrics', label: 'Biometrics', icon: BiometricsIcon, show: isAdmin },
-  ].filter(item => item.show);
+  // Setup Flow
+  { path: '/offices', label: 'Offices', icon: OfficesIcon, show: isAdmin },
+  { path: '/devices', label: 'Devices', icon: DevicesIcon, show: isAdmin },
+  { path: '/employees', label: 'Employees', icon: EmployeesIcon, show: isAdmin },
+
+  // Operations
+  { path: '/attendance', label: 'Attendance', icon: AttendanceIcon, show: true },
+  { path: '/leaves', label: 'Leaves', icon: LeavesIcon, show: isAdmin || isHR },
+
+  // Monitoring
+  { path: '/reports', label: 'Reports', icon: ReportsIcon, show: isAdmin || isHR },
+  { path: '/biometrics', label: 'Biometrics', icon: BiometricsIcon, show: isAdmin },
+].filter(item => item.show);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -140,7 +142,7 @@ export default function Layout() {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg blur opacity-60 "></div>
                 <div className="relative bg-gradient-to-r from-blue-600 to-purple-600 text-white w-8 h-8 rounded-lg flex items-center justify-center font-bold">
                   SA
                 </div>

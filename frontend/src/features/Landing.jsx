@@ -41,7 +41,7 @@ export default function LandingPage({ section }) {
     }
   }, [section]);
 
-  // Auto-rotate testimonials
+
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveTestimonial((prev) => (prev + 1) % testimonials.length);
@@ -51,13 +51,13 @@ export default function LandingPage({ section }) {
 
   return (
     <div className="overflow-x-hidden">
-      {/* Hero Section with Enhanced Design */}
+    
       <Hero />
 
-      {/* Trusted By Section */}
+      
       <TrustedBy />
 
-      {/* Features Section with Icons */}
+   
       <section ref={refs.features} id="features" className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -78,7 +78,7 @@ export default function LandingPage({ section }) {
         </div>
       </section>
 
-      {/* Services Section with Premium Design */}
+      
       <section ref={refs.services} id="services" className="py-24 bg-gradient-to-b from-slate-50 to-white">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -99,10 +99,9 @@ export default function LandingPage({ section }) {
         </div>
       </section>
 
-      {/* Stats Section */}
+
       <StatsSection />
 
-      {/* About Section with Premium Layout */}
       <section ref={refs.about} id="about" className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid gap-16 lg:grid-cols-2 items-center">
@@ -164,13 +163,13 @@ export default function LandingPage({ section }) {
         </div>
       </section>
 
-      {/* Testimonials Section */}
+ 
       <TestimonialsSection 
         activeTestimonial={activeTestimonial} 
         setActiveTestimonial={setActiveTestimonial} 
       />
 
-      {/* Pricing Section */}
+ 
       <section ref={refs.pricing} id="pricing" className="py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -191,10 +190,10 @@ export default function LandingPage({ section }) {
         </div>
       </section>
 
-      {/* CTA Section */}
+
       <CTASection />
 
-      {/* Contact Section with Enhanced Design */}
+   
       <section ref={refs.contact} id="contact" className="py-24 bg-gradient-to-b from-white to-slate-50">
         <div className="container mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
@@ -218,7 +217,7 @@ export default function LandingPage({ section }) {
   );
 }
 
-// Enhanced Hero Component
+
 function Hero() {
   const [isVisible, setIsVisible] = useState(false);
 
@@ -228,7 +227,7 @@ function Hero() {
 
   return (
     <section className="relative bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white overflow-hidden">
-      {/* Animated Background */}
+  
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-0 -left-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
         <div className="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>

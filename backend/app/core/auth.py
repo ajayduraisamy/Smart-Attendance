@@ -2,16 +2,19 @@ from datetime import datetime, timedelta
 from jose import jwt, JWTError
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
+from sqlalchemy.orm import Session
 
-
-SECRET_KEY = "attendance_secret_2026"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 900
+from app.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.database import get_db
+from app.models.user import User
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/users/login")
 
 
+# =====================================================
+# CREATE ACCESS TOKEN
+# =====================================================
 def create_access_token(data: dict):
 
     to_encode = data.copy()
@@ -29,6 +32,9 @@ def create_access_token(data: dict):
     )
 
 
+# =====================================================
+# VERIFY TOKEN
+# =====================================================
 def verify_token(token: str):
 
     try:
@@ -40,27 +46,53 @@ def verify_token(token: str):
         return payload
 
     except JWTError:
-        return None
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or expired token"
+        )
 
 
-def get_current_user(token: str = Depends(oauth2_scheme)):
+# =====================================================
+# GET CURRENT USER (DB VALIDATION)
+# =====================================================
+def get_current_user(
+    token: str = Depends(oauth2_scheme),
+    db: Session = Depends(get_db)
+):
 
     payload = verify_token(token)
 
-    if payload is None:
+    user_id: int = payload.get("user_id")
+
+    if user_id is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
+            detail="Invalid token payload"
         )
 
-    return payload
+    user = db.query(User).filter(
+        User.id == user_id,
+        User.is_active == True
+    ).first()
+
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not found or inactive"
+        )
+
+    return user
 
 
-def require_role(role: str):
+# =====================================================
+# ROLE BASED ACCESS
+# =====================================================
 
-    def role_checker(user=Depends(get_current_user)):
+def require_role(*roles):
 
-        if user.get("role") != role:
+    def role_checker(user: User = Depends(get_current_user)):
+
+        if user.role not in roles:
             raise HTTPException(
                 status_code=403,
                 detail="Access denied"

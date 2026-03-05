@@ -1,15 +1,23 @@
 from pydantic import BaseModel
 
 
-class OfficeCreate(BaseModel):
+class OfficeBase(BaseModel):
     name: str
     location: str | None = None
 
 
-class OfficeOut(BaseModel):
+class OfficeCreate(OfficeBase):
+    pass
+
+
+class OfficeUpdate(BaseModel):
+    name: str | None = None
+    location: str | None = None
+    status: bool | None = None
+
+
+class OfficeOut(OfficeBase):
     id: int
-    name: str
-    location: str | None
     status: bool
 
     class Config:

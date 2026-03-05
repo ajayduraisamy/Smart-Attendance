@@ -1,24 +1,103 @@
-﻿import React, { useEffect, useState } from 'react';
-import { Users, UserCheck, UserMinus, RefreshCw, LayoutDashboard } from 'lucide-react';
-import client from '../api/client';
+﻿import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { 
+  Users, 
+  UserCheck, 
+  UserMinus, 
+  RefreshCw, 
+  LayoutDashboard,
+  Building2,
+  HardDrive,
+  CalendarClock,
+  Sparkles
+} from "lucide-react";
+import client from "../api/client";
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 12
+    }
+  }
+};
+
+const statCardVariants = {
+  hidden: { scale: 0.9, opacity: 0 },
+  visible: { 
+    scale: 1, 
+    opacity: 1,
+    transition: {
+      type: "spring",
+      stiffness: 200,
+      damping: 15
+    }
+  },
+  hover: {
+    scale: 1.02,
+    y: -5,
+    transition: {
+      type: "spring",
+      stiffness: 400,
+      damping: 10
+    }
+  }
+};
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
+  const [lastUpdated, setLastUpdated] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
-    setError('');
+    setError("");
+
     try {
       const today = new Date().toISOString().slice(0, 10);
-      const res = await client.get('/reports/daily-summary', { params: { report_date: today } });
-      setData(res.data);
+
+      const [reportRes, officeRes, deviceRes] = await Promise.all([
+        client.get("/reports/daily-summary", { params: { report_date: today } }),
+        client.get("/offices"),
+        client.get("/devices"),
+      ]);
+
+      setData({
+        ...reportRes.data,
+        offices: officeRes.data.length,
+        devices: deviceRes.data.length,
+      });
+      
+      setLastUpdated(new Date().toLocaleTimeString());
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to sync latest data');
+      setError(err.response?.data?.detail || "Failed to sync latest data");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
+  };
+
+  const handleRefresh = () => {
+    setRefreshing(true);
+    loadData();
   };
 
   useEffect(() => {
@@ -26,160 +105,303 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <div className="p-2 bg-gradient-to-br from-indigo-600 to-indigo-700 rounded-lg shadow-lg shadow-indigo-200 animate-pulse-slow">
-              <LayoutDashboard className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent tracking-tight">
-              System Overview
-            </h1>
-          </div>
-          <p className="text-sm text-slate-500">Real-time attendance insights for {new Date().toLocaleDateString()}</p>
-        </div>
+    <motion.div 
+      className="p-6 max-w-7xl mx-auto space-y-8"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Premium Header with Animated Gradient */}
+      <motion.div 
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 shadow-2xl"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 100 }}
+      >
+        {/* Animated Background Elements */}
+        <motion.div 
+          className="absolute inset-0 bg-white/10 backdrop-blur-sm"
+          animate={{
+            background: [
+              'rgba(255,255,255,0.1)',
+              'rgba(255,255,255,0.15)',
+              'rgba(255,255,255,0.1)',
+            ]
+          }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
         
-        <button 
-          onClick={loadData}
-          disabled={loading}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-lg text-sm font-medium text-slate-700 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 transition-all duration-300 active:scale-95 shadow-sm hover:shadow-md hover:border-indigo-200 disabled:opacity-50 group"
-        >
-          <RefreshCw className={`w-4 h-4 transition-all duration-300 group-hover:text-indigo-600 ${loading ? 'animate-spin' : ''}`} />
-          Refresh Data
-        </button>
-      </div>
+        <motion.div 
+          className="absolute -right-10 -top-10 w-60 h-60 bg-white/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.2, 0.3, 0.2],
+          }}
+          transition={{ duration: 4, repeat: Infinity }}
+        />
+        
+        <motion.div 
+          className="absolute -left-10 -bottom-10 w-60 h-60 bg-white/20 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.2, 0.3, 0.2],
+          }}
+          transition={{ duration: 4, repeat: Infinity }}
+        />
 
-      {/* Error State */}
-      {error && (
-        <div className="p-4 bg-gradient-to-r from-red-50 to-rose-50 border border-red-100 rounded-xl text-red-600 text-sm flex items-center gap-3 shadow-sm animate-shake">
-          <span className="h-2 w-2 bg-gradient-to-r from-red-500 to-rose-500 rounded-full animate-pulse" />
-          {error}
+        {/* Floating Particles */}
+        {[...Array(5)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 bg-white rounded-full"
+            initial={{
+              x: Math.random() * 800,
+              y: Math.random() * 200,
+            }}
+            animate={{
+              y: [null, -20, null],
+              opacity: [0, 1, 0],
+            }}
+            transition={{
+              duration: 2 + Math.random() * 2,
+              repeat: Infinity,
+              delay: Math.random() * 2,
+            }}
+          />
+        ))}
+
+        <div className="relative flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <motion.div 
+              className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm"
+              whileHover={{ rotate: 360, scale: 1.1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <LayoutDashboard className="w-8 h-8 text-white" />
+            </motion.div>
+            
+            <div>
+              <motion.div 
+                className="flex items-center gap-2"
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                <h1 className="text-3xl font-bold text-white">System Overview</h1>
+                <Sparkles className="w-6 h-6 text-yellow-300" />
+              </motion.div>
+              
+              <motion.p 
+                className="text-white/90 text-sm flex items-center gap-2"
+                initial={{ x: -20, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                <CalendarClock className="w-4 h-4" />
+                {new Date().toLocaleDateString('en-US', { 
+                  weekday: 'long', 
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+              </motion.p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            {lastUpdated && (
+              <motion.div 
+                className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
+                <motion.div
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <div className="w-2 h-2 bg-green-400 rounded-full" />
+                </motion.div>
+                <span className="text-sm text-white">Last updated: {lastUpdated}</span>
+              </motion.div>
+            )}
+
+            <motion.button
+              onClick={handleRefresh}
+              disabled={loading || refreshing}
+              className="flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-lg text-white hover:bg-white/30 transition-all disabled:opacity-50"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? "animate-spin" : ""}`} />
+              Refresh
+            </motion.button>
+          </div>
         </div>
+      </motion.div>
+
+      {/* Error Message */}
+      {error && (
+        <motion.div 
+          className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+        >
+          <p className="text-red-600 flex items-center gap-2">
+            <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
+            {error}
+          </p>
+        </motion.div>
       )}
 
-      {/* Stats Grid */}
-      <div className="grid gap-6 md:grid-cols-3">
-        <StatCard 
-          title="Total Employees" 
-          value={data?.total_employees} 
+      {/* Main Stats Cards - All same size */}
+      <motion.div 
+        className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <StatCard
+          title="Total Offices"
+          value={data?.offices}
           loading={loading}
-          icon={<Users className="w-6 h-6 text-indigo-600" />}
-          gradient="from-indigo-500 to-indigo-600"
-          bgGradient="from-indigo-50 to-indigo-100/50"
+          icon={<Building2 className="w-5 h-5" />}
+          gradient="from-purple-500 to-pink-500"
         />
-        <StatCard 
-          title="Present Today" 
-          value={data?.present} 
+
+        <StatCard
+          title="Total Devices"
+          value={data?.devices}
           loading={loading}
-          icon={<UserCheck className="w-6 h-6 text-emerald-600" />}
-          gradient="from-emerald-500 to-emerald-600"
-          bgGradient="from-emerald-50 to-emerald-100/50"
+          icon={<HardDrive className="w-5 h-5" />}
+          gradient="from-blue-500 to-cyan-500"
         />
-        <StatCard 
-          title="Absent / On Leave" 
-          value={data?.absent} 
+
+        <StatCard
+          title="Total Employees"
+          value={data?.total_employees}
           loading={loading}
-          icon={<UserMinus className="w-6 h-6 text-rose-600" />}
-          gradient="from-rose-500 to-rose-600"
-          bgGradient="from-rose-50 to-rose-100/50"
+          icon={<Users className="w-5 h-5" />}
+          gradient="from-indigo-500 to-purple-500"
         />
-      </div>
-    </div>
+
+        <StatCard
+          title="Present Today"
+          value={data?.present}
+          loading={loading}
+          icon={<UserCheck className="w-5 h-5" />}
+          gradient="from-emerald-500 to-teal-500"
+        />
+
+        <StatCard
+          title="Absent Today"
+          value={data?.absent}
+          loading={loading}
+          icon={<UserMinus className="w-5 h-5" />}
+          gradient="from-rose-500 to-red-500"
+        />
+      </motion.div>
+    </motion.div>
   );
 }
 
-function StatCard({ title, value, loading, icon, gradient, bgGradient }) {
-  const [glowPosition, setGlowPosition] = useState({ x: 0, y: 0 });
+function StatCard({ title, value, loading, icon, gradient }) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const handleMouseMove = (e) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    setGlowPosition({
-      x: ((e.clientX - rect.left) / rect.width) * 100,
-      y: ((e.clientY - rect.top) / rect.height) * 100,
-    });
-  };
-
   return (
-    <div 
-      className="group relative overflow-hidden rounded-2xl bg-white p-6 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] border border-slate-100 transition-all duration-500 hover:shadow-xl hover:-translate-y-1"
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+    <motion.div
+      variants={statCardVariants}
+      whileHover="hover"
+      onHoverStart={() => setIsHovered(true)}
+      onHoverEnd={() => setIsHovered(false)}
+      className="relative group h-full"
     >
-      {/* Animated gradient background */}
-      <div 
-        className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-        style={{
-          background: `radial-gradient(circle at ${glowPosition.x}% ${glowPosition.y}%, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 50%)`,
+      {/* Animated Background Gradient */}
+      <motion.div 
+        className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
+        animate={{
+          scale: isHovered ? 1.02 : 1,
         }}
       />
       
-      {/* Animated border gradient */}
-      <div className="absolute inset-0 p-[1px] rounded-2xl bg-gradient-to-r opacity-0 group-hover:opacity-100 transition-opacity duration-500" 
-           style={{ mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)', maskComposite: 'exclude' }}>
-        <div className={`h-full w-full rounded-2xl bg-gradient-to-r ${gradient}`} />
-      </div>
+      {/* Card Content */}
+      <div className="relative rounded-xl bg-white p-5 shadow-lg border border-slate-100 overflow-hidden h-full">
+        {/* Animated Pattern Background */}
+        <motion.div 
+          className="absolute inset-0 opacity-5"
+          animate={{
+            backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%',
+          }}
+          transition={{ duration: 0.5 }}
+          style={{
+            backgroundImage: 'radial-gradient(circle at 2px 2px, #6366f1 1px, transparent 0)',
+            backgroundSize: '20px 20px',
+          }}
+        />
 
-      <div className="flex items-center justify-between relative z-10">
-        <div>
-          <p className="text-sm font-medium text-slate-500 mb-1 group-hover:text-slate-600 transition-colors">
-            {title}
-          </p>
+        {/* Glow Effect on Hover */}
+        <motion.div 
+          className="absolute -inset-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30"
+          animate={{
+            x: isHovered ? ['0%', '100%'] : '0%',
+          }}
+          transition={{ duration: 0.5 }}
+          style={{
+            filter: 'blur(20px)',
+            transform: 'skewX(-20deg)',
+          }}
+        />
+        
+        <div className="relative">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm font-medium text-slate-500">{title}</p>
+            <motion.div 
+              className={`p-2 rounded-lg bg-gradient-to-r ${gradient} text-white shadow-lg`}
+              animate={{ 
+                rotate: isHovered ? 360 : 0,
+                scale: isHovered ? 1.1 : 1
+              }}
+              transition={{ duration: 0.3 }}
+            >
+              {icon}
+            </motion.div>
+          </div>
+
           {loading ? (
-            <div className="h-8 w-16 bg-gradient-to-r from-slate-100 to-slate-200 animate-pulse rounded" />
+            <motion.div 
+              className="h-8 w-16 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded"
+              animate={{ 
+                backgroundPosition: ['0% 0%', '100% 0%'],
+                opacity: [0.5, 1, 0.5]
+              }}
+              transition={{ 
+                duration: 1.5, 
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              style={{
+                backgroundSize: '200% 100%'
+              }}
+            />
           ) : (
-            <p className={`text-3xl font-bold bg-gradient-to-r ${gradient} bg-clip-text text-transparent tracking-tight transition-all duration-300 group-hover:scale-105 origin-left`}>
-              {value ?? '0'}
-            </p>
+            <div className="flex items-end gap-2">
+              <motion.p 
+                className="text-3xl font-bold text-slate-900"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ 
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 15
+                }}
+              >
+                {value ?? "0"}
+              </motion.p>
+            </div>
           )}
         </div>
-        <div className={`p-3 rounded-xl bg-gradient-to-br ${bgGradient} transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-lg group-hover:shadow-xl`}>
-          <div className="transition-all duration-500 group-hover:scale-110 group-hover:rotate-[-3deg]">
-            {icon}
-          </div>
-        </div>
       </div>
-      
-      {/* Animated decorative background element */}
-      <div className="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.08] transition-all duration-700 group-hover:scale-110 group-hover:rotate-12">
-        {React.cloneElement(icon, { size: 100, className: `text-${gradient.split('-')[1]}-500` })}
-      </div>
-
-      {/* Floating particles effect on hover */}
-      {isHovered && (
-        <>
-          <div className="absolute top-0 left-1/4 w-1 h-1 bg-indigo-400/20 rounded-full animate-float" />
-          <div className="absolute bottom-0 right-1/3 w-1.5 h-1.5 bg-emerald-400/20 rounded-full animate-float-delayed" />
-          <div className="absolute top-1/2 right-1/4 w-1 h-1 bg-rose-400/20 rounded-full animate-float-slow" />
-        </>
-      )}
-    </div>
+    </motion.div>
   );
 }
-
-// Add these animations to your global CSS or tailwind.config.js
-// For tailwind.config.js, add:
-// extend: {
-//   animation: {
-//     'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-//     'shake': 'shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both',
-//     'float': 'float 3s ease-in-out infinite',
-//     'float-delayed': 'float 3s ease-in-out 1s infinite',
-//     'float-slow': 'float 4s ease-in-out 0.5s infinite',
-//   },
-//   keyframes: {
-//     shake: {
-//       '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-//       '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-//       '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-//       '40%, 60%': { transform: 'translate3d(4px, 0, 0)' },
-//     },
-//     float: {
-//       '0%, 100%': { transform: 'translateY(0px)' },
-//       '50%': { transform: 'translateY(-10px)' },
-//     },
-//   },
-// }

@@ -22,13 +22,13 @@ router = APIRouter(
 # Role Checker: Admin OR HR
 # =====================================================
 def require_admin_or_hr(user=Depends(get_current_user)):
-    if user.get("role") not in ["admin", "hr"]:
+    if user.role.lower() not in ["admin", "hr"]:
         raise HTTPException(status_code=403, detail="Access denied")
     return user
 
 
 # =====================================================
-# Create Employee (Admin / HR)
+# Create Employee
 # =====================================================
 @router.post("/", response_model=EmployeeOut)
 def create_employee(
@@ -36,6 +36,7 @@ def create_employee(
     db: Session = Depends(get_db),
     user=Depends(require_admin_or_hr)
 ):
+
     existing = db.query(Employee).filter(
         Employee.emp_id == data.emp_id
     ).first()
@@ -46,18 +47,16 @@ def create_employee(
             detail="Employee ID already exists"
         )
 
-    # Validate office if provided
-    if data.office_id:
-        office = db.query(Office).filter(
-            Office.id == data.office_id,
-            Office.status == True
-        ).first()
+    office = db.query(Office).filter(
+        Office.id == data.office_id,
+        Office.status == True
+    ).first()
 
-        if not office:
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid office"
-            )
+    if not office:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid office"
+        )
 
     emp = Employee(**data.dict())
 
@@ -69,15 +68,15 @@ def create_employee(
 
 
 # =====================================================
-# Update Employee (Admin / HR)
+# Get Single Employee
 # =====================================================
-@router.put("/{emp_id}", response_model=EmployeeOut)
-def update_employee(
+@router.get("/{emp_id}", response_model=EmployeeOut)
+def get_employee(
     emp_id: str,
-    data: EmployeeUpdate,
     db: Session = Depends(get_db),
     user=Depends(require_admin_or_hr)
 ):
+
     emp = db.query(Employee).filter(
         Employee.emp_id == emp_id
     ).first()
@@ -88,7 +87,30 @@ def update_employee(
             detail="Employee not found"
         )
 
-    # Validate office if updating
+    return emp
+
+
+# =====================================================
+# Update Employee
+# =====================================================
+@router.put("/{emp_id}", response_model=EmployeeOut)
+def update_employee(
+    emp_id: str,
+    data: EmployeeUpdate,
+    db: Session = Depends(get_db),
+    user=Depends(require_admin_or_hr)
+):
+
+    emp = db.query(Employee).filter(
+        Employee.emp_id == emp_id
+    ).first()
+
+    if not emp:
+        raise HTTPException(
+            status_code=404,
+            detail="Employee not found"
+        )
+
     if data.office_id:
         office = db.query(Office).filter(
             Office.id == data.office_id,
@@ -119,6 +141,7 @@ def deactivate_employee(
     db: Session = Depends(get_db),
     user=Depends(require_admin_or_hr)
 ):
+
     emp = db.query(Employee).filter(
         Employee.emp_id == emp_id
     ).first()
@@ -136,7 +159,7 @@ def deactivate_employee(
 
 
 # =====================================================
-# Reactivate / Change Status
+# Update Employee Status
 # =====================================================
 @router.put("/{emp_id}/status")
 def update_employee_status(
@@ -145,6 +168,7 @@ def update_employee_status(
     db: Session = Depends(get_db),
     user=Depends(require_admin_or_hr)
 ):
+
     emp = db.query(Employee).filter(
         Employee.emp_id == emp_id
     ).first()
@@ -162,7 +186,7 @@ def update_employee_status(
 
 
 # =====================================================
-# List Employees (Admin / HR)
+# List Employees
 # =====================================================
 @router.get("/", response_model=list[EmployeeOut])
 def list_employees(
@@ -170,9 +194,70 @@ def list_employees(
     db: Session = Depends(get_db),
     user=Depends(require_admin_or_hr)
 ):
+
     query = db.query(Employee)
 
     if active_only:
         query = query.filter(Employee.status == True)
 
     return query.all()
+
+
+# =====================================================
+# Get Employees By Office
+# =====================================================
+@router.get("/office/{office_id}", response_model=list[EmployeeOut])
+def get_employees_by_office(
+    office_id: int,
+    db: Session = Depends(get_db),
+    user=Depends(require_admin_or_hr)
+):
+
+    employees = db.query(Employee).filter(
+        Employee.office_id == office_id,
+        Employee.status == True
+    ).all()
+
+    return employees
+
+
+# =====================================================
+# Update Biometric Data
+# =====================================================
+@router.put("/{emp_id}/biometric")
+def update_biometric(
+    emp_id: str,
+    biometric_type: str = Query(...),
+    data: str = Query(...),
+    db: Session = Depends(get_db),
+    user=Depends(require_admin_or_hr)
+):
+
+    emp = db.query(Employee).filter(
+        Employee.emp_id == emp_id
+    ).first()
+
+    if not emp:
+        raise HTTPException(
+            status_code=404,
+            detail="Employee not found"
+        )
+
+    if biometric_type == "rfid":
+        emp.rfid_uid = data
+
+    elif biometric_type == "fingerprint":
+        emp.fingerprint_template = data.encode()
+
+    elif biometric_type == "face":
+        emp.face_embedding = data.encode()
+
+    else:
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid biometric type"
+        )
+
+    db.commit()
+
+    return {"message": "Biometric updated successfully"}

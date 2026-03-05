@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, Date, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, Date, String, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from sqlalchemy.types import DateTime
 
@@ -11,14 +12,32 @@ class Leave(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    emp_id = Column(Integer, ForeignKey("employees.id"))
+    employee_id = Column(
+        Integer,
+        ForeignKey("employees.id"),
+        nullable=False,
+        index=True
+    )
 
-    start_date = Column(Date)
-    end_date = Column(Date)
+    start_date = Column(Date, nullable=False)
 
-    reason = Column(String(255))
+    end_date = Column(Date, nullable=False)
+
+    leave_type = Column(String(50), default="CASUAL")
+    # CASUAL / SICK / PAID / UNPAID
+
+    reason = Column(String(255), nullable=True)
 
     status = Column(String(20), default="PENDING")
     # PENDING / APPROVED / REJECTED
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    approved_by = Column(Integer, nullable=True)
+    # Admin / HR user ID
+
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
+
+    # Relationship
+    employee = relationship("Employee", backref="leaves")

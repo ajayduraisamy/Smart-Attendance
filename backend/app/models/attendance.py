@@ -1,4 +1,13 @@
-from sqlalchemy import Column, Integer, String, Date, Time, DateTime
+from sqlalchemy import (
+    Column,
+    Integer,
+    ForeignKey,
+    Date,
+    Time,
+    DateTime,
+    String
+)
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 
 from app.database import Base
@@ -9,22 +18,43 @@ class Attendance(Base):
 
     id = Column(Integer, primary_key=True, index=True)
 
-    emp_id = Column(String(50), nullable=False)
+    employee_id = Column(
+        Integer,
+        ForeignKey("employees.id"),
+        nullable=False,
+        index=True
+    )
 
-    emp_name = Column(String(100), nullable=False)
+    device_id = Column(
+        Integer,
+        ForeignKey("devices.id"),
+        nullable=False,
+        index=True
+    )
 
-    device_id = Column(String(50), nullable=False)
-
-    office_id = Column(Integer, nullable=True)
+    office_id = Column(
+        Integer,
+        ForeignKey("offices.id"),
+        nullable=False,
+        index=True
+    )
 
     date = Column(Date, nullable=False)
 
-    in_time = Column(Time, nullable=True)
+    check_in = Column(Time, nullable=True)
 
-    out_time = Column(Time, nullable=True)
+    check_out = Column(Time, nullable=True)
 
-    type = Column(String(10), nullable=False)  # IN / OUT
+    source = Column(String(10), default="ONLINE")
 
-    source = Column(String(10), default="ONLINE")  # ONLINE / OFFLINE
+    created_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now()
+    )
 
-    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    # Relationships
+    employee = relationship("Employee", back_populates="attendance_records")
+
+    device = relationship("Device")
+
+    office = relationship("Office")

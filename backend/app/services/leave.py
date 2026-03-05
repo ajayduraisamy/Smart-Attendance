@@ -1,68 +1,62 @@
 from sqlalchemy.orm import Session
 from app.models.leave import Leave
+from app.models.employee import Employee
 from datetime import date
 
 
-def apply_leave(
-    emp_id: str,
-    start_date: date,
-    end_date: date,
-    reason: str,
-    db: Session
-) -> Leave:
-    """Create a new leave request"""
-    
+def apply_leave(data, db: Session):
+
+    employee = db.query(Employee).filter(
+        Employee.id == data.employee_id,
+        Employee.status == True
+    ).first()
+
+    if not employee:
+        return None
+
     leave = Leave(
-        emp_id=emp_id,
-        start_date=start_date,
-        end_date=end_date,
-        reason=reason,
-        status="PENDING"
+        employee_id=data.employee_id,
+        start_date=data.start_date,
+        end_date=data.end_date,
+        reason=data.reason,
+        leave_type=data.leave_type
     )
-    
+
     db.add(leave)
     db.commit()
     db.refresh(leave)
-    
+
     return leave
 
 
-def approve_leave(leave_id: int, db: Session) -> bool:
-    """Approve a leave request"""
-    
-    leave = db.query(Leave).filter(
-        Leave.id == leave_id
-    ).first()
-    
-    if not leave:
-        return False
-    
-    leave.status = "APPROVED"
-    db.commit()
-    
-    return True
+def get_employee_leaves(employee_id: int, db: Session):
 
-
-def reject_leave(leave_id: int, reason: str, db: Session) -> bool:
-    """Reject a leave request"""
-    
-    leave = db.query(Leave).filter(
-        Leave.id == leave_id
-    ).first()
-    
-    if not leave:
-        return False
-    
-    leave.status = "REJECTED"
-    leave.remarks = reason
-    db.commit()
-    
-    return True
-
-
-def get_pending_leaves(db: Session) -> list:
-    """Get all pending leave requests"""
-    
     return db.query(Leave).filter(
-        Leave.status == "PENDING"
+        Leave.employee_id == employee_id
+    ).all()
+
+
+def update_leave_status(leave_id: int, status: str, db: Session):
+
+    leave = db.query(Leave).filter(
+        Leave.id == leave_id
+    ).first()
+
+    if not leave:
+        return None
+
+    leave.status = status
+
+    db.commit()
+    db.refresh(leave)
+
+    return leave
+
+
+def get_leaves_by_date(check_date: date, db: Session):
+
+    return db.query(Leave).filter(
+        Leave.start_date <= check_date,
+        Leave.end_date >= check_date,
+        Leave.status == "APPROVED"
     ).all()

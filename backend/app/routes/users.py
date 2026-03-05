@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.database import get_db
@@ -11,7 +11,9 @@ from app.core.auth import create_access_token, require_role, get_current_user
 router = APIRouter(prefix="/users", tags=["Users"])
 
 
-# Register Admin / HR
+# =====================================================
+# REGISTER USER
+# =====================================================
 @router.post("/register", response_model=UserOut)
 def register_user(
     data: UserCreate,
@@ -31,8 +33,9 @@ def register_user(
     user = User(
         name=data.name,
         email=data.email,
-        password=hash_password(data.password),
-        role=data.role
+        password_hash=hash_password(data.password),
+        role=data.role,
+        is_active=True
     )
 
     db.add(user)
@@ -42,7 +45,9 @@ def register_user(
     return user
 
 
-# Login
+# =====================================================
+# LOGIN
+# =====================================================
 @router.post("/login")
 def login_user(
     data: UserLogin,
@@ -53,44 +58,50 @@ def login_user(
         User.email == data.email
     ).first()
 
-    if not user:
+    if not user or not user.is_active:
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials"
         )
 
-    if not verify_password(data.password, user.password):
+    if not verify_password(data.password, user.password_hash):
         raise HTTPException(
-            status_code=401,
+            status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid credentials"
         )
 
-    token = create_access_token({
-        "user_id": user.id,
-        "role": user.role
-    })
+    access_token = create_access_token(
+        data={
+            "user_id": user.id,
+            "role": user.role
+        }
+    )
 
     return {
-        "access_token": token,
+        "access_token": access_token,
+        "token_type": "bearer",
         "role": user.role,
         "user_id": user.id,
         "name": user.name,
-        "email": user.email,
-        "token_type": "bearer"
+        "email": user.email
     }
 
 
-# Logged user info
-@router.get("/me")
+# =====================================================
+# CURRENT USER PROFILE
+# =====================================================
+@router.get("/me", response_model=UserOut)
 def my_profile(
-    user=Depends(get_current_user)
+    user: User = Depends(get_current_user)
 ):
     return user
 
 
-# Admin only test
+# =====================================================
+# ADMIN ONLY TEST
+# =====================================================
 @router.get("/admin-only")
 def admin_only(
-    user=Depends(require_role("admin"))
+    user: User = Depends(require_role("admin"))
 ):
     return {"message": "Welcome Admin"}

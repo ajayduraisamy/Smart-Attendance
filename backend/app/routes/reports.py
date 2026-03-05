@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from sqlalchemy import func, extract
+from sqlalchemy import extract
 from datetime import date
 
 from app.database import get_db
@@ -30,10 +30,10 @@ def daily_summary(
             Employee.status == True
         ).count()
 
-        # Distinct employees marked IN on that date
-        present = db.query(Attendance.emp_id).filter(
-            func.date(Attendance.date) == report_date,
-            Attendance.type == "IN"
+        # Employees who checked in
+        present = db.query(Attendance.employee_id).filter(
+            Attendance.date == report_date,
+            Attendance.check_in != None
         ).distinct().count()
 
         absent = total - present
@@ -60,16 +60,18 @@ def absent_list(
     user=Depends(get_current_user)
 ):
     try:
-        # Get emp_ids who are present
-        present_ids = db.query(Attendance.emp_id).filter(
-            func.date(Attendance.date) == report_date,
-            Attendance.type == "IN"
+        # Employees who are present
+        present_ids = db.query(
+            Attendance.employee_id
+        ).filter(
+            Attendance.date == report_date,
+            Attendance.check_in != None
         ).subquery()
 
-        # IMPORTANT: use emp_id, NOT id
+        # Employees not in attendance
         absent = db.query(Employee).filter(
             Employee.status == True,
-            ~Employee.emp_id.in_(present_ids)
+            ~Employee.id.in_(present_ids)
         ).all()
 
         return absent

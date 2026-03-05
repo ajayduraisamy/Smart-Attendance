@@ -18,20 +18,34 @@ router = APIRouter(
 )
 
 
+# =====================================================
 # Enroll RFID
+# =====================================================
 @router.post("/rfid")
 def enroll_rfid(
     data: RFIDEnroll,
     db: Session = Depends(get_db),
-    user=Depends(require_role("admin"))
+    user=Depends(require_role("admin", "hr"))
 ):
 
     emp = db.query(Employee).filter(
-        Employee.emp_id == data.emp_id
+        Employee.emp_id == data.emp_id,
+        Employee.status == True
     ).first()
 
     if not emp:
-        raise HTTPException(404, "Employee not found")
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    # Prevent duplicate RFID assignment
+    existing = db.query(Employee).filter(
+        Employee.rfid_uid == data.rfid_uid
+    ).first()
+
+    if existing and existing.id != emp.id:
+        raise HTTPException(
+            status_code=400,
+            detail="RFID already assigned to another employee"
+        )
 
     emp.rfid_uid = data.rfid_uid
 
@@ -40,20 +54,23 @@ def enroll_rfid(
     return {"message": "RFID enrolled successfully"}
 
 
+# =====================================================
 # Enroll Fingerprint
+# =====================================================
 @router.post("/fingerprint")
 def enroll_fingerprint(
     data: FingerEnroll,
     db: Session = Depends(get_db),
-    user=Depends(require_role("admin"))
+    user=Depends(require_role("admin", "hr"))
 ):
 
     emp = db.query(Employee).filter(
-        Employee.emp_id == data.emp_id
+        Employee.emp_id == data.emp_id,
+        Employee.status == True
     ).first()
 
     if not emp:
-        raise HTTPException(404, "Employee not found")
+        raise HTTPException(status_code=404, detail="Employee not found")
 
     emp.fingerprint_template = data.fingerprint_template
 
@@ -62,20 +79,23 @@ def enroll_fingerprint(
     return {"message": "Fingerprint enrolled successfully"}
 
 
+# =====================================================
 # Enroll Face
+# =====================================================
 @router.post("/face")
 def enroll_face(
     data: FaceEnroll,
     db: Session = Depends(get_db),
-    user=Depends(require_role("admin"))
+    user=Depends(require_role("admin", "hr"))
 ):
 
     emp = db.query(Employee).filter(
-        Employee.emp_id == data.emp_id
+        Employee.emp_id == data.emp_id,
+        Employee.status == True
     ).first()
 
     if not emp:
-        raise HTTPException(404, "Employee not found")
+        raise HTTPException(status_code=404, detail="Employee not found")
 
     emp.face_embedding = data.face_embedding
 
