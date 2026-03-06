@@ -45,7 +45,7 @@ class Attendance(Base):
 
     check_out = Column(Time, nullable=True)
 
-    source = Column(String(10), default="ONLINE")
+    source = Column(String(50), default="ONLINE") # Increased from 10 to 50
 
     created_at = Column(
         DateTime(timezone=True),

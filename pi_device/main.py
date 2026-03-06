@@ -15,7 +15,7 @@ OFFICE_ID = 1
 
 def authenticate():
 
-    print("\n--- New Scan ---")
+ 
 
     # 1. RFID
     rfid = scan_rfid()
@@ -32,10 +32,10 @@ def authenticate():
     cam.release()
 
     if not ret:
-        print("Camera Error ❌")
+        print("Camera Error ")
         return
 
-    rgb = frame[:, :, ::-1]   # BGR → RGB
+    rgb = frame[:, :, ::-1]  
 
     # 4. Check Local DB
     conn = get_connection()
@@ -49,7 +49,7 @@ def authenticate():
     emp = cursor.fetchone()
 
     if not emp:
-        print("RFID Not Found ❌")
+        print("RFID Not Found ")
         conn.close()
         return
 
@@ -63,12 +63,12 @@ def authenticate():
     matched = match_face(stored_embedding, rgb)
 
     if not matched:
-        print("Face Not Matched ❌")
+        print("Face Not Matched ")
         conn.close()
         return
 
-    print("Face Verified ✔")
-    print("Access Granted ✔")
+    print("Face Verified ")
+    print("Access Granted ")
 
     # 7. Save Attendance
     now = datetime.now()
@@ -91,7 +91,7 @@ def authenticate():
     conn.commit()
     conn.close()
 
-    # 8. Unlock Door
+   
     unlock_door()
 
 

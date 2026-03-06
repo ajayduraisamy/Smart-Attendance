@@ -32,7 +32,7 @@ def enroll_face(emp_id):
     if res.status_code == 200:
         print("Face Enrolled ")
     else:
-        print("Enroll Failed ❌", res.text)
+        print("Enroll Failed ", res.text)
 
 
 if __name__ == "__main__":

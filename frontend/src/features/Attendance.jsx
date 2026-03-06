@@ -25,8 +25,7 @@ export default function AttendancePage() {
   const formatTime = (utcString) => {
   if (!utcString || utcString === '-') return '-';
   
-  // Database-la irunthu vara time string-ai Date object-aa maathurom
-  // "17:25:48.643994" munnadi date sethu full string-aa maathina thaan JS correct-aa parse pannum
+
   const [hours, minutes] = utcString.split(':');
   const date = new Date();
   date.setUTCHours(hours, minutes);
@@ -44,6 +43,7 @@ export default function AttendancePage() {
     try {
       const res = await client.get(`/attendance/by-employee/${empId}`);
       setRecords(res.data);
+      console.log(res.data);
     } catch (err) {
       setError('Failed to load employee attendance');
     } finally {
@@ -53,7 +53,7 @@ export default function AttendancePage() {
 
   useEffect(() => {
     fetchByDate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+   
   }, []);
 
   return (

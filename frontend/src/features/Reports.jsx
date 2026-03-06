@@ -132,16 +132,16 @@ export default function ReportsPage() {
            
   {monthly.map((r, idx) => (
     <tr key={`${r.id}-${idx}`} className="border-t">
-      {/* Backend-la irunthu vara emp_id (AT001) */}
+      
       <td className="px-3 py-2">{r.emp_id}</td>
       
-      {/* Backend-la irunthu vara emp_name */}
+     
       <td className="px-3 py-2">{r.emp_name}</td>
       
       <td className="px-3 py-2">{r.date}</td>
       <td className="px-3 py-2">{r.type || 'Regular'}</td>
       
-      {/* formatTime function call panrom */}
+    
       <td className="px-3 py-2">{formatTime(r.in_time)}</td>
       <td className="px-3 py-2">{formatTime(r.out_time)}</td>
     </tr>
