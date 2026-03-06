@@ -22,6 +22,21 @@ export default function AttendancePage() {
     }
   };
 
+  const formatTime = (utcString) => {
+  if (!utcString || utcString === '-') return '-';
+  
+  // Database-la irunthu vara time string-ai Date object-aa maathurom
+  // "17:25:48.643994" munnadi date sethu full string-aa maathina thaan JS correct-aa parse pannum
+  const [hours, minutes] = utcString.split(':');
+  const date = new Date();
+  date.setUTCHours(hours, minutes);
+
+  return date.toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: true,
+  });
+};
   const fetchByEmp = async () => {
     if (!empId) return;
     setLoading(true);
@@ -66,22 +81,24 @@ export default function AttendancePage() {
               <th className="px-3 py-2">Date</th>
               <th className="px-3 py-2">In</th>
               <th className="px-3 py-2">Out</th>
-              <th className="px-3 py-2">Type</th>
+              
               <th className="px-3 py-2">Source</th>
             </tr>
           </thead>
           <tbody>
-            {records.map((r) => (
-              <tr key={r.id} className="border-t">
-                <td className="px-3 py-2">{r.emp_id}</td>
-                <td className="px-3 py-2">{r.emp_name}</td>
-                <td className="px-3 py-2">{r.date}</td>
-                <td className="px-3 py-2">{r.in_time || '-'}</td>
-                <td className="px-3 py-2">{r.out_time || '-'}</td>
-                <td className="px-3 py-2">{r.type}</td>
-                <td className="px-3 py-2">{r.source}</td>
-              </tr>
-            ))}
+        {records.map((r) => (
+  <tr key={r.id} className="border-t">
+    <td className="px-3 py-2">{r.emp_id}</td>
+    <td className="px-3 py-2">{r.name}</td> 
+    <td className="px-3 py-2">{r.date}</td>
+    
+   
+    <td className="px-3 py-2">{formatTime(r.check_in)}</td> 
+    <td className="px-3 py-2">{formatTime(r.check_out)}</td>
+    
+    <td className="px-3 py-2">{r.source}</td>
+  </tr>
+))}
             {!loading && records.length === 0 && (
               <tr><td className="px-3 py-2" colSpan={7}>No records</td></tr>
             )}

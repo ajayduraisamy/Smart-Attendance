@@ -85,20 +85,27 @@ def absent_list(
 # Monthly Report
 # ==============================
 @router.get("/monthly")
-def monthly_report(
-    year: int,
-    month: int,
-    db: Session = Depends(get_db),
-    user=Depends(get_current_user)
-):
+def monthly_report(year: int, month: int, db: Session = Depends(get_db), user=Depends(get_current_user)):
     try:
-        data = db.query(Attendance).filter(
+        # JOIN panni Employee details-aiyum sethu edukkurom
+        results = db.query(Attendance, Employee).join(
+            Employee, Attendance.employee_id == Employee.id
+        ).filter(
             extract("year", Attendance.date) == year,
             extract("month", Attendance.date) == month
         ).all()
 
-        return data
-
+        # React-ku thevaiyana names (emp_name, in_time) correct-aa format panrom
+        return [
+            {
+                "id": att.id,
+                "emp_id": emp.emp_id,   # React looks for r.emp_id
+                "emp_name": emp.name,   # React looks for r.emp_name
+                "date": att.date,
+                "type": "Regular",     
+                "in_time": att.check_in,
+                "out_time": att.check_out
+            } for att, emp in results
+        ]
     except Exception as e:
-        print("MONTHLY ERROR:", e)
         raise HTTPException(status_code=500, detail="Failed to get monthly report")

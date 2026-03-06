@@ -31,6 +31,21 @@ export default function ReportsPage() {
     }
   };
 
+  const formatTime = (timeStr) => {
+  if (!timeStr || timeStr === '-') return '-';
+  try {
+    const [hours, minutes] = timeStr.split(':');
+    const d = new Date();
+    d.setUTCHours(hours, minutes);
+    return d.toLocaleTimeString('en-IN', { 
+      hour: '2-digit', 
+      minute: '2-digit', 
+      hour12: true 
+    });
+  } catch (e) {
+    return timeStr;
+  }
+};
   const loadMonthly = async () => {
     setError('');
     try {
@@ -114,20 +129,28 @@ export default function ReportsPage() {
               </tr>
             </thead>
             <tbody>
-              {monthly.map((r, idx) => (
-                <tr key={`${r.id}-${idx}`} className="border-t">
-                  <td className="px-3 py-2">{r.emp_id}</td>
-                  <td className="px-3 py-2">{r.emp_name}</td>
-                  <td className="px-3 py-2">{r.date}</td>
-                  <td className="px-3 py-2">{r.type}</td>
-                  <td className="px-3 py-2">{r.in_time || '-'}</td>
-                  <td className="px-3 py-2">{r.out_time || '-'}</td>
-                </tr>
-              ))}
-              {monthly.length === 0 && (
-                <tr><td className="px-3 py-2" colSpan={6}>No data</td></tr>
-              )}
-            </tbody>
+           
+  {monthly.map((r, idx) => (
+    <tr key={`${r.id}-${idx}`} className="border-t">
+      {/* Backend-la irunthu vara emp_id (AT001) */}
+      <td className="px-3 py-2">{r.emp_id}</td>
+      
+      {/* Backend-la irunthu vara emp_name */}
+      <td className="px-3 py-2">{r.emp_name}</td>
+      
+      <td className="px-3 py-2">{r.date}</td>
+      <td className="px-3 py-2">{r.type || 'Regular'}</td>
+      
+      {/* formatTime function call panrom */}
+      <td className="px-3 py-2">{formatTime(r.in_time)}</td>
+      <td className="px-3 py-2">{formatTime(r.out_time)}</td>
+    </tr>
+  ))}
+  {monthly.length === 0 && (
+    <tr><td className="px-3 py-2" colSpan={6}>No data</td></tr>
+  )}
+</tbody>
+          
           </table>
         </div>
       </section>

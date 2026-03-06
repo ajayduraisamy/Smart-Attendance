@@ -191,7 +191,7 @@ function BaseDashboard({ title }) {
               transition={{ delay: 0.4 }}
             >
               <CalendarClock className="w-4 h-4 text-white" />
-              <span className="text-sm text-white">Updated {lastUpdated}</span>
+              <span className="text-sm text-white"> {lastUpdated}</span>
             </motion.div>
           )}
         </div>

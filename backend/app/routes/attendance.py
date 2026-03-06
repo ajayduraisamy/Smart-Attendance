@@ -14,7 +14,10 @@ router = APIRouter(
     prefix="/attendance",
     tags=["Attendance"]
 )
+from datetime import date, datetime
+import pytz 
 
+IST = pytz.timezone('Asia/Kolkata')
 
 # Mark Attendance (Device API)
 @router.post("/mark", response_model=AttendanceOut)
@@ -36,36 +39,61 @@ def mark_attendance_api(
     return record
 
 
+
 # Get Attendance By Date
-@router.get("/by-date/{day}", response_model=list[AttendanceOut])
+@router.get("/by-date/{day}") 
 def attendance_by_date(
     day: date,
     db: Session = Depends(get_db)
 ):
 
-    return db.query(Attendance).filter(
+    results = db.query(Attendance, Employee).join(
+        Employee, Attendance.employee_id == Employee.id
+    ).filter(
         Attendance.date == day
     ).all()
 
+  
+    return [
+        {
+            "id": att.id,
+            "emp_id": emp.emp_id,
+            "name": emp.name,
+            "date": att.date,
+            "check_in": att.check_in,
+            "check_out": att.check_out,
+            "source": att.source
+        } for att, emp in results
+    ]
 
-# Get Attendance By Employee
-@router.get("/by-employee/{emp_id}", response_model=list[AttendanceOut])
+
+@router.get("/by-employee/{emp_id}")
 def attendance_by_employee(
     emp_id: str,
     db: Session = Depends(get_db)
 ):
-
-    emp = db.query(Employee).filter(
-        Employee.emp_id == emp_id
-    ).first()
-
-    if not emp:
-        raise HTTPException(404, "Employee not found")
-
-    return db.query(Attendance).filter(
-        Attendance.employee_id == emp.id
+ 
+    results = db.query(Attendance, Employee).join(
+        Employee, Attendance.employee_id == Employee.id
+    ).filter(
+        Employee.emp_id == emp_id 
     ).all()
 
+    if not results:
+        raise HTTPException(404, "No attendance records found for this employee")
+
+  
+    return [
+        {
+            "id": att.id,
+            "emp_id": emp.emp_id,  
+            "name": emp.name,     
+            "date": att.date,
+            "check_in": att.check_in,
+            "check_out": att.check_out,
+            "source": att.source
+        } for att, emp in results
+    ]
 
 # Daily Attendance Summary
 @router.get("/summary/{day}")

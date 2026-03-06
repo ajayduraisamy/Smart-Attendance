@@ -122,12 +122,12 @@ export default function DashboardLayout() {
             </>
           )}
 
-          {isAdmin && (
+          {/* {isAdmin && (
             <NavLink to="/app/biometrics" className={linkClass} onClick={() => setIsMobileOpen(false)}>
               <BiometricsIcon className="w-5 h-5 flex-shrink-0" />
               {(isSidebarOpen || isMobileOpen) && <span>Biometrics</span>}
             </NavLink>
-          )}
+          )} */}
         </nav>
 
         {/* Logout Section */}

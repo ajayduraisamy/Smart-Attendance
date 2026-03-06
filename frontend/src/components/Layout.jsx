@@ -127,7 +127,7 @@ const navigationItems = [
 
   // Monitoring
   { path: '/reports', label: 'Reports', icon: ReportsIcon, show: isAdmin || isHR },
-  { path: '/biometrics', label: 'Biometrics', icon: BiometricsIcon, show: isAdmin },
+  // { path: '/biometrics', label: 'Biometrics', icon: BiometricsIcon, show: isAdmin },
 ].filter(item => item.show);
 
   return (
