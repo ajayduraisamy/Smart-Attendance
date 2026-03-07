@@ -40,6 +40,7 @@ def mark_attendance_api(
 
 
 
+
 # Get Attendance By Date
 @router.get("/by-date/{day}") 
 def attendance_by_date(

@@ -50,16 +50,25 @@ class Employee(Base):
 
     status = Column(Boolean, default=True)
 
-    # Biometric Data
+    # RFID
     rfid_uid = Column(String(100), unique=True, nullable=True, index=True)
 
-    fingerprint_template = Column(LargeBinary, nullable=True)
+    # Fingerprint Samples (1–5)
+    fingerprint_1 = Column(LargeBinary, nullable=True)
+    fingerprint_2 = Column(LargeBinary, nullable=True)
+    fingerprint_3 = Column(LargeBinary, nullable=True)
+    fingerprint_4 = Column(LargeBinary, nullable=True)
+    fingerprint_5 = Column(LargeBinary, nullable=True)
 
-    face_embedding = Column(LargeBinary, nullable=True)
+    # Face Embeddings (1–5)
+    face_embedding_1 = Column(LargeBinary, nullable=True)
+    face_embedding_2 = Column(LargeBinary, nullable=True)
+    face_embedding_3 = Column(LargeBinary, nullable=True)
+    face_embedding_4 = Column(LargeBinary, nullable=True)
+    face_embedding_5 = Column(LargeBinary, nullable=True)
 
     # Relationships
     office = relationship("Office", back_populates="employees")
-    #office = relationship("Office", backref="employees")
 
     attendance_records = relationship(
         "Attendance",
