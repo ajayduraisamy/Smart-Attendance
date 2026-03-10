@@ -84,10 +84,10 @@ def assign_biometric(data: dict, db: Session = Depends(get_db)):
             if face:
 
                 setattr(
-    emp,
-    f"face_embedding_{i+1}",
-    face.encode()
-)
+                    emp,
+                    f"face_embedding_{i+1}",
+                    json.dumps(face).encode()
+                )
 
     db.commit()
 
@@ -213,15 +213,9 @@ def sync_attendance(data: dict, db: Session = Depends(get_db)):
 @router.post("/verify-and-record")
 def verify_and_record(data: dict, db: Session = Depends(get_db)):
 
-    print("\n=========== NEW REQUEST ===========")
-    print("Incoming Data:", data)
-
     bio_type = data.get("type")
     identifier = data.get("identifier")
     device_code = data.get("device_id")
-
-    print("BIO TYPE:", bio_type)
-    print("DEVICE CODE:", device_code)
 
     if not device_code:
         raise HTTPException(400, "Device ID required")
@@ -233,29 +227,17 @@ def verify_and_record(data: dict, db: Session = Depends(get_db)):
     if not device:
         raise HTTPException(404, "Device not registered")
 
-    print("Device Found:", device.device_id)
-
     emp = None
 
-    # -------------------------------------------------
-    # RFID AUTH
-    # -------------------------------------------------
+    # ---------------- RFID ----------------
 
     if bio_type == "rfid":
-
-        print("RFID UID:", identifier)
 
         emp = db.query(Employee).filter(
             Employee.rfid_uid == identifier
         ).first()
 
-        if emp:
-            print("RFID matched employee:", emp.emp_id)
-
-
-    # -------------------------------------------------
-    # FINGERPRINT AUTH
-    # -------------------------------------------------
+    # ---------------- FINGERPRINT ----------------
 
     elif bio_type == "fingerprint":
 
@@ -263,8 +245,6 @@ def verify_and_record(data: dict, db: Session = Depends(get_db)):
             raise HTTPException(400, "Fingerprint slot id required")
 
         slot_id = int(identifier)
-
-        print("Fingerprint Slot Received:", slot_id)
 
         emp = db.query(Employee).filter(
             or_(
@@ -276,23 +256,16 @@ def verify_and_record(data: dict, db: Session = Depends(get_db)):
             )
         ).first()
 
-        if emp:
-            print("Fingerprint matched employee:", emp.emp_id)
-        else:
-            print("Fingerprint slot not found in DB")
+        if not emp:
+            raise HTTPException(404, "Fingerprint not registered")
 
-
-    # -------------------------------------------------
-    # FACE AUTH
-    # -------------------------------------------------
+    # ---------------- FACE ----------------
 
     elif bio_type == "face":
 
-        print("Face verification started")
-
         try:
 
-            # Decode base64 image
+            # decode base64 image from Raspberry Pi
             img_bytes = base64.b64decode(identifier)
 
             np_arr = np.frombuffer(img_bytes, np.uint8)
@@ -304,22 +277,17 @@ def verify_and_record(data: dict, db: Session = Depends(get_db)):
             encodings = face_recognition.face_encodings(rgb)
 
             if len(encodings) == 0:
-                print("No face detected")
-                raise HTTPException(404, "No face detected")
+                raise HTTPException(
+                    status_code=404,
+                    detail="No face detected"
+                )
 
             incoming_embedding = encodings[0]
 
-            print("Incoming embedding length:", len(incoming_embedding))
-
-            employees = db.query(Employee).filter(
-                Employee.office_id == device.office_id
-            ).all()
-
-            print("Employees to compare:", len(employees))
+            employees = db.query(Employee).all()
 
             for e in employees:
-
-                print("\nComparing with:", e.emp_id)
+                print("Comparing face with:", e.emp_id)
 
                 faces = [
                     e.face_embedding_1,
@@ -329,45 +297,37 @@ def verify_and_record(data: dict, db: Session = Depends(get_db)):
                     e.face_embedding_5
                 ]
 
-                for index, f in enumerate(faces):
+                for f in faces:
 
                     if not f:
                         continue
 
                     try:
 
-                        decoded = json.loads(f.decode())
-
-                        # Handle double JSON encoding
-                        if isinstance(decoded, str):
-                            decoded = json.loads(decoded)
-
-                        stored_embedding = np.array(decoded)
-
+                        stored_embedding = np.array(
+                            json.loads(f.decode())
+                        )
+                        print("Distance:", np.linalg.norm(stored_embedding - incoming_embedding))
+                       
                         distance = np.linalg.norm(
                             stored_embedding - incoming_embedding
                         )
+                        print("Distance:", distance)
+                    
+                        
 
-                        print(f"Face slot {index+1} distance:", distance)
-
-                        # Slightly relaxed threshold for Raspberry Pi cameras
-                        if distance < 0.80:
-
-                            print("FACE MATCH FOUND:", e.emp_id)
+                        if distance < 0.6:
 
                             emp = e
                             break
 
-                    except Exception as err:
-
-                        print("Face decode error:", err)
+                    except:
+                        continue
 
                 if emp:
                     break
 
         except Exception as e:
-
-            print("Face processing error:", str(e))
 
             raise HTTPException(
                 status_code=500,
@@ -375,22 +335,12 @@ def verify_and_record(data: dict, db: Session = Depends(get_db)):
             )
 
 
-    # -------------------------------------------------
-    # VALIDATION
-    # -------------------------------------------------
+    # ---------------- VALIDATION ----------------
 
     if not emp:
-
-        print("USER NOT RECOGNIZED")
-
         raise HTTPException(404, "User not recognized")
 
-    print("Employee identified:", emp.emp_id)
-
-
-    # -------------------------------------------------
-    # ATTENDANCE LOGIC
-    # -------------------------------------------------
+    # ---------------- ATTENDANCE ----------------
 
     today = datetime.now().date()
 
@@ -414,25 +364,17 @@ def verify_and_record(data: dict, db: Session = Depends(get_db)):
 
         status_msg = "CHECK-IN SUCCESS"
 
-        print("Attendance created")
-
     elif not attendance.check_out:
 
         attendance.check_out = datetime.now().time()
 
         status_msg = "CHECK-OUT SUCCESS"
 
-        print("Checkout recorded")
-
     else:
 
         status_msg = "ALREADY MARKED"
 
-        print("Attendance already completed")
-
     db.commit()
-
-    print("Attendance saved")
 
     return {
         "name": emp.name,

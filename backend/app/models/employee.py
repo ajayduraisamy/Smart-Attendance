@@ -10,7 +10,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-
+from sqlalchemy import Integer
 from app.database import Base
 
 
@@ -54,11 +54,13 @@ class Employee(Base):
     rfid_uid = Column(String(100), unique=True, nullable=True, index=True)
 
     # Fingerprint Samples (1–5)
-    fingerprint_1 = Column(LargeBinary, nullable=True)
-    fingerprint_2 = Column(LargeBinary, nullable=True)
-    fingerprint_3 = Column(LargeBinary, nullable=True)
-    fingerprint_4 = Column(LargeBinary, nullable=True)
-    fingerprint_5 = Column(LargeBinary, nullable=True)
+#from sqlalchemy import Integer
+
+    fingerprint_1 = Column(Integer, nullable=True)
+    fingerprint_2 = Column(Integer, nullable=True)
+    fingerprint_3 = Column(Integer, nullable=True)
+    fingerprint_4 = Column(Integer, nullable=True)
+    fingerprint_5 = Column(Integer, nullable=True)
 
     # Face Embeddings (1–5)
     face_embedding_1 = Column(LargeBinary, nullable=True)

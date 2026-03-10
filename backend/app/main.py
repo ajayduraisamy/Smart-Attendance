@@ -17,7 +17,7 @@ from app.routes import attendance as attendance_router
 
 app = FastAPI(
     title="Smart Attendance System",
-    version="1.0.0",
+    version="1.0.0"
 )
 
 raw_origins = os.getenv(
