@@ -351,7 +351,7 @@ def verify_and_record(data: dict, db: Session = Depends(get_db)):
                         print(f"Face slot {index+1} distance:", distance)
 
                         # Slightly relaxed threshold for Raspberry Pi cameras
-                        if distance < 0.80:
+                        if distance < 0.50:
 
                             print("FACE MATCH FOUND:", e.emp_id)
 
