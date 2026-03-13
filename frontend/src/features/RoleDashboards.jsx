@@ -6,12 +6,47 @@ import {
   Users, 
   UserCheck, 
   UserMinus,
-  CalendarClock
+  CalendarClock,
+  TrendingUp,
+  TrendingDown,
+  RefreshCw,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  XCircle
 } from "lucide-react";
 import client from "../api/client";
 
+// Professional color palette
+const colors = {
+  admin: {
+    primary: "#2563eb",
+    secondary: "#7c3aed",
+    gradient: "linear-gradient(135deg, #2563eb 0%, #7c3aed 100%)"
+  },
+  hr: {
+    primary: "#0891b2",
+    secondary: "#0d9488",
+    gradient: "linear-gradient(135deg, #0891b2 0%, #0d9488 100%)"
+  },
+  employee: {
+    primary: "#059669",
+    secondary: "#16a34a",
+    gradient: "linear-gradient(135deg, #059669 0%, #16a34a 100%)"
+  }
+};
+
 // Animation variants
-const containerVariants = {
+const fadeInUp = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6, ease: [0.6, -0.05, 0.01, 0.99] }
+  }
+};
+
+const staggerContainer = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
@@ -22,54 +57,21 @@ const containerVariants = {
   }
 };
 
-const itemVariants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 12
-    }
-  }
-};
-
-const statCardVariants = {
-  hidden: { scale: 0.9, opacity: 0 },
-  visible: { 
-    scale: 1, 
-    opacity: 1,
-    transition: {
-      type: "spring",
-      stiffness: 200,
-      damping: 15
-    }
-  },
-  hover: {
-    scale: 1.02,
-    y: -5,
-    transition: {
-      type: "spring",
-      stiffness: 400,
-      damping: 10
-    }
-  }
-};
-
 function BaseDashboard({ title }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const loadData = async () => {
-    setLoading(true);
+  const loadData = async (showRefreshing = false) => {
+    if (showRefreshing) setRefreshing(true);
+    else setLoading(true);
+    
     setError("");
 
     try {
       const today = new Date().toISOString().slice(0, 10);
-
       const reportRes = await client.get("/reports/daily-summary", {
         params: { report_date: today }
       });
@@ -93,11 +95,16 @@ function BaseDashboard({ title }) {
         devices
       });
       
-      setLastUpdated(new Date().toLocaleTimeString());
+      setLastUpdated(new Date().toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit',
+        second: '2-digit'
+      }));
     } catch (err) {
       setError(err.response?.data?.detail || "Failed to load dashboard");
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
@@ -105,244 +112,286 @@ function BaseDashboard({ title }) {
     loadData();
   }, []);
 
-  const getGradientByTitle = () => {
+  const handleRefresh = () => {
+    loadData(true);
+  };
+
+  const getDashboardConfig = () => {
     switch(title) {
       case "Admin Dashboard":
-        return "from-purple-600 via-pink-500 to-red-500";
+        return {
+          color: colors.admin,
+          icon: Building2,
+          subtitle: "System Overview & Management"
+        };
       case "HR Dashboard":
-        return "from-blue-600 via-cyan-500 to-teal-500";
+        return {
+          color: colors.hr,
+          icon: Users,
+          subtitle: "Workforce Analytics & Tracking"
+        };
       case "Employee Dashboard":
-        return "from-emerald-600 via-green-500 to-lime-500";
+        return {
+          color: colors.employee,
+          icon: UserCheck,
+          subtitle: "Personal Attendance & Stats"
+        };
       default:
-        return "from-indigo-600 via-blue-500 to-purple-500";
+        return {
+          color: colors.admin,
+          icon: Building2,
+          subtitle: "Dashboard Overview"
+        };
     }
   };
 
-  const getIconByTitle = () => {
-    switch(title) {
-      case "Admin Dashboard":
-        return <Building2 className="w-6 h-6" />;
-      case "HR Dashboard":
-        return <Users className="w-6 h-6" />;
-      case "Employee Dashboard":
-        return <UserCheck className="w-6 h-6" />;
-      default:
-        return <Building2 className="w-6 h-6" />;
-    }
-  };
+  const config = getDashboardConfig();
+  const Icon = config.icon;
+
+  // Calculate attendance rate
+  const attendanceRate = data?.total_employees 
+    ? Math.round((data.present / data.total_employees) * 100) 
+    : 0;
 
   return (
-    <motion.div 
-      className="p-6 max-w-7xl mx-auto space-y-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.5 }}
-    >
-      {/* Premium Header with Gradient */}
-      <motion.div 
-        className={`relative overflow-hidden rounded-2xl bg-gradient-to-r ${getGradientByTitle()} p-8 shadow-xl`}
-        initial={{ y: -20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", stiffness: 100 }}
-      >
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-sm"></div>
-        <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
-        <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-white/20 rounded-full blur-3xl"></div>
-        
-        <div className="relative flex items-center justify-between">
+    <div className="min-h-screen bg-slate-50">
+      {/* Header - Clean, no navigation */}
+      <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
+        <div className="px-8 py-5 flex items-center justify-between max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
-            <motion.div 
-              className="p-3 bg-white/20 rounded-xl backdrop-blur-sm"
-              whileHover={{ rotate: 360 }}
-              transition={{ duration: 0.5 }}
+            <div 
+              className="w-12 h-12 rounded-xl flex items-center justify-center shadow-lg"
+              style={{ background: config.color.gradient }}
             >
-              {getIconByTitle()}
-            </motion.div>
+              <Icon className="w-6 h-6 text-white" />
+            </div>
             <div>
-              <motion.h1 
-                className="text-2xl font-bold text-white"
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                {title}
-              </motion.h1>
-              <motion.p 
-                className="text-white/80 text-sm"
-                initial={{ x: -20, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                Today's system summary • {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </motion.p>
+              <h1 className="text-xl font-bold text-slate-900">{title}</h1>
+              <p className="text-sm text-slate-500">{config.subtitle}</p>
             </div>
           </div>
           
-          {lastUpdated && (
-            <motion.div 
-              className="flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleRefresh}
+              disabled={refreshing}
+              className="px-4 py-2 text-sm bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors flex items-center gap-2 text-slate-700"
             >
-              <CalendarClock className="w-4 h-4 text-white" />
-              <span className="text-sm text-white"> {lastUpdated}</span>
-            </motion.div>
-          )}
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              {refreshing ? 'Refreshing...' : 'Refresh'}
+            </button>
+            <div className="flex items-center gap-2 text-sm bg-slate-100 px-4 py-2 rounded-lg">
+              <CalendarClock className="w-4 h-4 text-slate-500" />
+              <span className="text-slate-600 font-medium">{lastUpdated || '--:--:--'}</span>
+            </div>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Error Message with Animation */}
-      {error && (
+      {/* Main Content */}
+      <div className="p-8 max-w-7xl mx-auto">
+        {/* Welcome Section */}
         <motion.div 
-          className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
+          className="mb-8"
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
         >
-          <p className="text-red-600 flex items-center gap-2">
-            <span className="w-2 h-2 bg-red-600 rounded-full animate-pulse"></span>
-            {error}
-          </p>
+          <h2 className="text-2xl font-bold text-slate-900">
+            Good {new Date().getHours() < 12 ? 'Morning' : 'Afternoon'}
+          </h2>
+          <p className="text-slate-500 mt-1">Here's what's happening with your workforce today.</p>
         </motion.div>
-      )}
 
-      {/* Stats Grid - All cards same size */}
-      <motion.div 
-        className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-      >
-        {title === "Admin Dashboard" && (
-          <>
-            <StatCard 
-              title="Total Offices" 
-              value={data?.offices} 
-              loading={loading}
-              icon={<Building2 className="w-5 h-5" />}
-              gradient="from-purple-500 to-pink-500"
-            />
-            <StatCard 
-              title="Total Devices" 
-              value={data?.devices} 
-              loading={loading}
-              icon={<HardDrive className="w-5 h-5" />}
-              gradient="from-blue-500 to-cyan-500"
-            />
-          </>
+        {/* Error Message */}
+        {error && (
+          <motion.div 
+            className="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <AlertCircle className="w-5 h-5 text-red-500" />
+            <p className="text-sm text-red-600 flex-1">{error}</p>
+            <button 
+              onClick={handleRefresh}
+              className="px-3 py-1.5 bg-red-100 text-red-700 rounded-lg text-sm font-medium hover:bg-red-200 transition-colors"
+            >
+              Try Again
+            </button>
+          </motion.div>
         )}
 
-        <StatCard 
-          title="Total Employees" 
-          value={data?.total_employees} 
-          loading={loading}
-          icon={<Users className="w-5 h-5" />}
-          gradient="from-indigo-500 to-purple-500"
-        />
-        
-        <StatCard 
-          title="Present Today" 
-          value={data?.present} 
-          loading={loading}
-          icon={<UserCheck className="w-5 h-5" />}
-          gradient="from-emerald-500 to-teal-500"
-        />
-        
-        <StatCard 
-          title="Absent Today" 
-          value={data?.absent} 
-          loading={loading}
-          icon={<UserMinus className="w-5 h-5" />}
-          gradient="from-rose-500 to-red-500"
-        />
-      </motion.div>
-    </motion.div>
+        {/* Stats Grid */}
+        <motion.div 
+          className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 mb-8"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
+          {title === "Admin Dashboard" && (
+            <>
+              <StatCard 
+                title="Total Offices" 
+                value={data?.offices} 
+                loading={loading}
+                icon={Building2}
+                color={colors.admin.primary}
+              />
+              <StatCard 
+                title="Total Devices" 
+                value={data?.devices} 
+                loading={loading}
+                icon={HardDrive}
+                color={colors.admin.secondary}
+              />
+            </>
+          )}
+
+          <StatCard 
+            title="Total Employees" 
+            value={data?.total_employees} 
+            loading={loading}
+            icon={Users}
+            color="#6366f1"
+          />
+          
+          <StatCard 
+            title="Present Today" 
+            value={data?.present} 
+            loading={loading}
+            icon={UserCheck}
+            color="#10b981"
+            subtitle={`${attendanceRate}% attendance rate`}
+          />
+          
+          <StatCard 
+            title="Absent Today" 
+            value={data?.absent} 
+            loading={loading}
+            icon={UserMinus}
+            color="#ef4444"
+            subtitle={`${100 - attendanceRate}% absent`}
+          />
+        </motion.div>
+
+        {/* Recent Activity Section */}
+        <motion.div 
+          className="bg-white rounded-xl border border-slate-200 overflow-hidden"
+          variants={fadeInUp}
+          initial="hidden"
+          animate="visible"
+        >
+          <div className="p-6 border-b border-slate-100">
+            <h3 className="font-semibold text-slate-900 text-lg">Recent Activity</h3>
+          </div>
+          <div className="divide-y divide-slate-100">
+            {loading ? (
+              [...Array(4)].map((_, i) => (
+                <div key={i} className="p-4 animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-slate-200 rounded-full" />
+                    <div className="flex-1">
+                      <div className="h-4 bg-slate-200 rounded w-1/3 mb-2" />
+                      <div className="h-3 bg-slate-200 rounded w-1/4" />
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <>
+                <ActivityItem 
+                  user="Ajay D"
+                  action="checked in at 09:00 AM"
+                  time="4 hours ago"
+                  status="success"
+                />
+               
+              </>
+            )}
+          </div>
+        </motion.div>
+      </div>
+    </div>
   );
 }
 
-function StatCard({ title, value, loading, icon, gradient }) {
+function StatCard({ title, value, loading, icon: Icon, color, subtitle }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <motion.div
-      variants={statCardVariants}
-      whileHover="hover"
+      variants={{
+        hidden: { scale: 0.9, opacity: 0 },
+        visible: { scale: 1, opacity: 1 }
+      }}
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="relative group h-full"
+      className="bg-white rounded-xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all duration-200"
     >
-      <div className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
-      
-      <div className="relative rounded-xl bg-white p-5 shadow-lg border border-slate-100 overflow-hidden h-full">
-        {/* Animated Background Pattern */}
-        <motion.div 
-          className="absolute inset-0 opacity-5"
-          animate={{
-            backgroundPosition: isHovered ? ['0% 0%', '100% 100%'] : '0% 0%',
-          }}
-          transition={{ duration: 0.5 }}
-          style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, #6366f1 1px, transparent 0)',
-            backgroundSize: '20px 20px',
-          }}
-        />
-        
-        <div className="relative">
-          <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-slate-500">{title}</p>
-            <motion.div 
-              className={`p-2 rounded-lg bg-gradient-to-r ${gradient} text-white shadow-lg`}
-              animate={{ 
-                rotate: isHovered ? 360 : 0,
-                scale: isHovered ? 1.1 : 1
-              }}
-              transition={{ duration: 0.3 }}
-            >
-              {icon}
-            </motion.div>
-          </div>
-
-          {loading ? (
-            <motion.div 
-              className="h-8 w-16 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded"
-              animate={{ 
-                backgroundPosition: ['0% 0%', '100% 0%'],
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{ 
-                duration: 1.5, 
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              style={{
-                backgroundSize: '200% 100%'
-              }}
-            />
-          ) : (
-            <div className="flex items-end gap-2">
-              <motion.p 
-                className="text-3xl font-bold text-slate-900"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ 
-                  type: "spring",
-                  stiffness: 200,
-                  damping: 15
-                }}
-              >
-                {value ?? "0"}
-              </motion.p>
-            </div>
-          )}
+      <div className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-sm font-medium text-slate-500">{title}</p>
+          <motion.div 
+            className="w-10 h-10 rounded-lg flex items-center justify-center"
+            style={{ 
+              background: `${color}15`,
+              color: color
+            }}
+            animate={{ 
+              rotate: isHovered ? 360 : 0,
+              scale: isHovered ? 1.1 : 1
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            <Icon className="w-5 h-5" />
+          </motion.div>
         </div>
+
+        {loading ? (
+          <div className="space-y-2">
+            <div className="h-8 bg-slate-200 rounded animate-pulse w-3/4" />
+            {subtitle && <div className="h-4 bg-slate-100 rounded animate-pulse w-1/2" />}
+          </div>
+        ) : (
+          <>
+            <div className="text-3xl font-bold text-slate-900 mb-1">
+              {value?.toLocaleString() ?? "0"}
+            </div>
+            {subtitle && (
+              <p className="text-sm text-slate-500">{subtitle}</p>
+            )}
+          </>
+        )}
       </div>
     </motion.div>
+  );
+}
+
+function ActivityItem({ user, action, time, status }) {
+  const getStatusIcon = () => {
+    switch(status) {
+      case 'success':
+        return <CheckCircle2 className="w-5 h-5 text-emerald-500" />;
+      case 'pending':
+        return <Clock className="w-5 h-5 text-amber-500" />;
+      case 'error':
+        return <XCircle className="w-5 h-5 text-red-500" />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="p-4 hover:bg-slate-50 transition-colors flex items-center gap-4">
+      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-slate-200 to-slate-300 flex-shrink-0" />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-medium text-slate-900">{user}</p>
+        <p className="text-sm text-slate-500">{action}</p>
+        <p className="text-xs text-slate-400 mt-1">{time}</p>
+      </div>
+      {getStatusIcon()}
+    </div>
   );
 }
 

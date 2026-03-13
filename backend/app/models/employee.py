@@ -5,12 +5,11 @@ from sqlalchemy import (
     Date,
     Boolean,
     ForeignKey,
-    LargeBinary,
-    DateTime
+    DateTime,
+    Text
 )
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
-from sqlalchemy import Integer
 from app.database import Base
 
 
@@ -50,26 +49,30 @@ class Employee(Base):
 
     status = Column(Boolean, default=True)
 
-    # RFID
+    # ---------------- RFID ----------------
     rfid_uid = Column(String(100), unique=True, nullable=True, index=True)
 
-    # Fingerprint Samples (1–5)
-#from sqlalchemy import Integer
+    # ---------------- Fingerprints ----------------
+    fingerprint_1 = Column(Text, nullable=True)
+    fingerprint_2 = Column(Text, nullable=True)
+    fingerprint_3 = Column(Text, nullable=True)
+    fingerprint_4 = Column(Text, nullable=True)
 
-    fingerprint_1 = Column(Integer, nullable=True)
-    fingerprint_2 = Column(Integer, nullable=True)
-    fingerprint_3 = Column(Integer, nullable=True)
-    fingerprint_4 = Column(Integer, nullable=True)
-    fingerprint_5 = Column(Integer, nullable=True)
+    # ---------------- Face Images (BASE64) ----------------
+    face_image_1 = Column(Text, nullable=True)
+    face_image_2 = Column(Text, nullable=True)
+    face_image_3 = Column(Text, nullable=True)
+    face_image_4 = Column(Text, nullable=True)
+    face_image_5 = Column(Text, nullable=True)
 
-    # Face Embeddings (1–5)
-    face_embedding_1 = Column(LargeBinary, nullable=True)
-    face_embedding_2 = Column(LargeBinary, nullable=True)
-    face_embedding_3 = Column(LargeBinary, nullable=True)
-    face_embedding_4 = Column(LargeBinary, nullable=True)
-    face_embedding_5 = Column(LargeBinary, nullable=True)
+    # ---------------- Face Embeddings ----------------
+    face_embedding_1 = Column(Text, nullable=True)
+    face_embedding_2 = Column(Text, nullable=True)
+    face_embedding_3 = Column(Text, nullable=True)
+    face_embedding_4 = Column(Text, nullable=True)
+    face_embedding_5 = Column(Text, nullable=True)
 
-    # Relationships
+    # ---------------- Relationships ----------------
     office = relationship("Office", back_populates="employees")
 
     attendance_records = relationship(
@@ -78,7 +81,7 @@ class Employee(Base):
         cascade="all, delete"
     )
 
-    # Audit Fields
+    # ---------------- Audit Fields ----------------
     created_at = Column(
         DateTime(timezone=True),
         server_default=func.now()

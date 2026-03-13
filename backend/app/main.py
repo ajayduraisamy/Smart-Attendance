@@ -20,29 +20,21 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Add your IP directly to the list
 raw_origins = os.getenv(
     "CORS_ORIGINS",
-    "http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174",
+    "http://localhost:5173,http://127.0.0.1:5173,http://192.168.1.6:5173",
 )
 allowed_origins = [origin.strip() for origin in raw_origins.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
-    # Useful for Vite dev ports like 5173/5174 and any alternate local port.
-    allow_origin_regex=r"https?://(localhost|127\.0\.0\.1)(:\d+)?$",
+    allow_origins=allowed_origins, 
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-
-# @app.exception_handler(SQLAlchemyError)
-# def db_exception_handler(_: Request, exc: SQLAlchemyError):
-#     return JSONResponse(
-#         status_code=503,
-#         content={"detail": "Database error", "error": exc.__class__.__name__},
-#     )
 
 
 @app.exception_handler(Exception)

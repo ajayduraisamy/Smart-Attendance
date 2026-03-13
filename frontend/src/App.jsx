@@ -17,6 +17,7 @@ import ReportsPage from './features/Reports';
 import BiometricsPage from './features/Biometrics';
 import { AdminDashboard, HRDashboard, EmployeeDashboard } from './features/RoleDashboards';
 import { ROLES } from './config/roles';
+import EmployeesListPage from './features/EmployeesListPage';
 
 export default function App() {
   return (
@@ -56,6 +57,14 @@ export default function App() {
               }
             />
             <Route
+  path="employee-list"
+  element={
+    <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.HR]}>
+      <EmployeesListPage />
+    </ProtectedRoute>
+  }
+/>
+            <Route
               path="devices"
               element={
                 <ProtectedRoute allowedRoles={[ROLES.ADMIN]}>
@@ -63,6 +72,7 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+            
             <Route
               path="offices"
               element={

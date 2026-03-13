@@ -55,7 +55,7 @@ export default function LandingPage({ section }) {
       <Hero />
 
       
-      <TrustedBy />
+     
 
    
       <section ref={refs.features} id="features" className="py-24 bg-white">
@@ -405,22 +405,6 @@ function PricingCard({ plan, index }) {
   );
 }
 
-function TrustedBy() {
-  return (
-    <div className="py-12 bg-white border-y border-slate-100">
-      <div className="container mx-auto px-4">
-        <p className="text-center text-sm font-semibold text-slate-500 uppercase tracking-wider mb-8">
-          Trusted by leading companies
-        </p>
-        <div className="flex flex-wrap justify-center items-center gap-12 opacity-50">
-          {['Company 1', 'Company 2', 'Company 3', 'Company 4', 'Company 5'].map((company, i) => (
-            <div key={i} className="text-xl font-bold text-slate-400">{company}</div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function StatsSection() {
   return (

@@ -113,21 +113,28 @@ export default function Layout() {
     setIsMobileMenuOpen(false);
     setIsUserMenuOpen(false);
   }, [location]);
+  console.log("Current User Role:", user?.role);
+console.log("ROLES.ADMIN is:", ROLES.ADMIN);
+console.log("Is Admin:", isAdmin);
+console.log("Is HR:", isHR);
+console.log("Employee List Item Show:", isAdmin || isHR);
 const navigationItems = [
-  { path: '/', label: 'Dashboard', icon: DashboardIcon, show: true },
+  { path: '/app', label: 'Dashboard', icon: DashboardIcon, show: true },
 
   // Setup Flow
-  { path: '/offices', label: 'Offices', icon: OfficesIcon, show: isAdmin },
-  { path: '/devices', label: 'Devices', icon: DevicesIcon, show: isAdmin },
-  { path: '/employees', label: 'Employees', icon: EmployeesIcon, show: isAdmin },
+  { path: '/app/offices', label: 'Offices', icon: OfficesIcon, show: isAdmin },
+  { path: '/app/devices', label: 'Devices', icon: DevicesIcon, show: isAdmin },
+  { path: '/app/employees', label: 'Employees', icon: EmployeesIcon, show: isAdmin },
+  
+  // FIX: Change '/employee-list' to '/app/employee-list'
+  { path: '/app/employee-list', label: 'Employee List', icon: EmployeesIcon, show: isAdmin || isHR },
 
   // Operations
-  { path: '/attendance', label: 'Attendance', icon: AttendanceIcon, show: true },
-  { path: '/leaves', label: 'Leaves', icon: LeavesIcon, show: isAdmin || isHR },
+  { path: '/app/attendance', label: 'Attendance', icon: AttendanceIcon, show: true },
+  { path: '/app/leaves', label: 'Leaves', icon: LeavesIcon, show: isAdmin || isHR },
 
   // Monitoring
-  { path: '/reports', label: 'Reports', icon: ReportsIcon, show: isAdmin || isHR },
-  // { path: '/biometrics', label: 'Biometrics', icon: BiometricsIcon, show: isAdmin },
+  { path: '/app/reports', label: 'Reports', icon: ReportsIcon, show: isAdmin || isHR },
 ].filter(item => item.show);
 
   return (

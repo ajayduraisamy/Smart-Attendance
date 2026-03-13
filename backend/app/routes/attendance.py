@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime, date
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -19,25 +19,66 @@ import pytz
 
 IST = pytz.timezone('Asia/Kolkata')
 
-# Mark Attendance (Device API)
-@router.post("/mark", response_model=AttendanceOut)
-def mark_attendance_api(
-    data: AttendanceMark,
-    db: Session = Depends(get_db)
-):
+#
 
-    record = mark_attendance(
-        emp_id=data.emp_id,
-        device_id=data.device_id,
-        source=data.source,
-        db=db
-    )
 
+
+router = APIRouter(prefix="/attendance", tags=["Attendance"])
+
+
+@router.post("/mark")
+def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
+
+    emp = db.query(Employee).filter(Employee.emp_id == data.emp_id).first()
+
+    if not emp:
+        raise HTTPException(status_code=404, detail="Employee not found")
+
+    device = db.query(Device).filter(Device.id == data.device_id).first()
+
+    if not device:
+        raise HTTPException(status_code=404, detail="Device not found")
+
+    today = date.today()
+    now_time = datetime.now().time()
+
+    record = db.query(Attendance).filter(
+        Attendance.employee_id == emp.id,
+        Attendance.date == today
+    ).first()
+
+    # FIRST SCAN → CHECK IN
     if not record:
-        raise HTTPException(400, "Invalid employee or device")
 
-    return record
+        record = Attendance(
+            employee_id=emp.id,
+            device_id=device.id,
+            office_id=emp.office_id,
+            date=today,
+            check_in=now_time,
+            source=data.source
+        )
 
+        db.add(record)
+        db.commit()
+
+        return {
+            "employee": emp.name,
+            "status": "CHECK IN",
+            "time": str(now_time)
+        }
+
+    # NEXT SCANS → UPDATE CHECK OUT
+    else:
+
+        record.check_out = now_time
+        db.commit()
+
+        return {
+            "employee": emp.name,
+            "status": "EXIT / UPDATE",
+            "time": str(now_time)
+        }
 
 
 

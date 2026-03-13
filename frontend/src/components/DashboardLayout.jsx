@@ -104,13 +104,18 @@ export default function DashboardLayout() {
             </>
           )}
 
-          <NavLink to="/app/attendance" className={linkClass} onClick={() => setIsMobileOpen(false)}>
-            <AttendanceIcon className="w-5 h-5 flex-shrink-0" />
-            {(isSidebarOpen || isMobileOpen) && <span>Attendance</span>}
-          </NavLink>
+         
 
           {(isAdmin || isHR) && (
             <>
+             <NavLink to="/app/employee-list" className={linkClass} onClick={() => setIsMobileOpen(false)}>
+    <EmployeesIcon className="w-5 h-5 flex-shrink-0" />
+    {(isSidebarOpen || isMobileOpen) && <span>Employee List</span>}
+  </NavLink>
+   <NavLink to="/app/attendance" className={linkClass} onClick={() => setIsMobileOpen(false)}>
+            <AttendanceIcon className="w-5 h-5 flex-shrink-0" />
+            {(isSidebarOpen || isMobileOpen) && <span>Attendance</span>}
+          </NavLink>
               <NavLink to="/app/leaves" className={linkClass} onClick={() => setIsMobileOpen(false)}>
                 <LeavesIcon className="w-5 h-5 flex-shrink-0" />
                 {(isSidebarOpen || isMobileOpen) && <span>Leaves</span>}
@@ -119,6 +124,8 @@ export default function DashboardLayout() {
                 <ReportsIcon className="w-5 h-5 flex-shrink-0" />
                 {(isSidebarOpen || isMobileOpen) && <span>Reports</span>}
               </NavLink>
+
+             
             </>
           )}
 
