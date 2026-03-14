@@ -172,18 +172,22 @@ export default function AttendancePage() {
     fetchByDate();
   };
 
-  const formatTime = (timeString) => {
-    if (!timeString) return '—';
-    try {
-      return new Date(timeString).toLocaleTimeString('en-US', { 
-        hour: '2-digit', 
-        minute: '2-digit',
-        hour12: true 
-      });
-    } catch {
-      return timeString;
-    }
-  };
+const formatTime = (timeString) => {
+  if (!timeString) return "—";
+
+  try {
+    const [hour, minute] = timeString.split(":");
+
+    let h = parseInt(hour);
+    const ampm = h >= 12 ? "PM" : "AM";
+
+    h = h % 12 || 12;
+
+    return `${h}:${minute} ${ampm}`;
+  } catch {
+    return timeString;
+  }
+};
 
   const getStatusBadge = (record) => {
     if (!record.check_in) {

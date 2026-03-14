@@ -30,26 +30,30 @@ router = APIRouter(prefix="/attendance", tags=["Attendance"])
 def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
 
     emp = db.query(Employee).filter(Employee.emp_id == data.emp_id).first()
-
     if not emp:
-        raise HTTPException(status_code=404, detail="Employee not found")
+        raise HTTPException(404, "Employee not found")
 
     device = db.query(Device).filter(Device.id == data.device_id).first()
-
     if not device:
-        raise HTTPException(status_code=404, detail="Device not found")
+        raise HTTPException(404, "Device not found")
 
-    today = date.today()
-    now_time = datetime.now().time()
+    today = datetime.now(IST).date()
+    now_time = datetime.now(IST).time()
 
-    record = db.query(Attendance).filter(
+    # get today's records
+    records = db.query(Attendance).filter(
         Attendance.employee_id == emp.id,
         Attendance.date == today
-    ).first()
+    ).all()
+
+    count = len(records)
+
+    # limit scans per day
+    if count >= 7:
+        return {"message": "Daily access limit reached"}
 
     # FIRST SCAN → CHECK IN
-    if not record:
-
+    if count == 0:
         record = Attendance(
             employee_id=emp.id,
             device_id=device.id,
@@ -65,21 +69,47 @@ def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
         return {
             "employee": emp.name,
             "status": "CHECK IN",
-            "time": str(now_time)
+            "time": now_time.strftime("%H:%M:%S")
         }
 
-    # NEXT SCANS → UPDATE CHECK OUT
-    else:
+    # LAST SCAN → CHECK OUT
+    if count == 6:
+        record = Attendance(
+            employee_id=emp.id,
+            device_id=device.id,
+            office_id=emp.office_id,
+            date=today,
+            check_out=now_time,
+            source=data.source
+        )
 
-        record.check_out = now_time
+        db.add(record)
         db.commit()
 
         return {
             "employee": emp.name,
-            "status": "EXIT / UPDATE",
+            "status": "CHECK OUT",
             "time": str(now_time)
         }
 
+    # MIDDLE SCANS → ACCESS
+    record = Attendance(
+        employee_id=emp.id,
+        device_id=device.id,
+        office_id=emp.office_id,
+        date=today,
+        check_in=now_time,
+        source=data.source
+    )
+
+    db.add(record)
+    db.commit()
+
+    return {
+        "employee": emp.name,
+        "status": "ACCESS",
+        "time": str(now_time)
+    }
 
 
 # Get Attendance By Date
