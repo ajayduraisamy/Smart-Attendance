@@ -105,6 +105,21 @@ export default function AddEmployeePage() {
     }
   };
 
+  const handlePhotoUpload = (e) => {
+  const file = e.target.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+
+  reader.onloadend = () => {
+    setForm({
+      ...form,
+      photo: reader.result
+    })
+  }
+
+  reader.readAsDataURL(file)
+}
   // Check hardware response during enrollment
  useEffect(() => {
   if (!enrollingBio.waiting) return;
@@ -512,7 +527,29 @@ if (previewRes.data.image) {
                     ))}
                   </select>
                 </div>
+
+                <div>
+<label className="block text-sm font-medium text-gray-700 mb-1">
+Profile Photo
+</label>
+
+<input
+  type="file"
+  accept="image/*"
+  onChange={handlePhotoUpload}
+  className="w-full p-2.5 border border-gray-300 rounded-lg"
+/>
+
+{form.photo && (
+  <img
+    src={form.photo}
+    alt="preview"
+    className="mt-2 w-24 h-24 object-cover rounded-lg border"
+  />
+)}
+</div>
               </div>
+              
             </div>
 
             {/* Biometric Enrollment - Only show after employee is saved */}

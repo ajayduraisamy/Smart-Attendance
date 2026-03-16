@@ -136,11 +136,43 @@ export default function ReportsPage() {
     }
   };
 
-  const handleExport = (type) => {
-    // Implement export logic based on type
-    console.log(`Exporting ${type} in ${exportFormat} format`);
-    setShowExportMenu(false);
-  };
+const handleExport = async (type) => {
+  try {
+
+    let url = ""
+
+    if (type === "csv") {
+      url = `/reports/export-csv?report_date=${reportDate}`
+    }
+
+    if (type === "pdf") {
+      url = `/reports/export-pdf?report_date=${reportDate}`
+    }
+
+    const response = await client.get(url, {
+      responseType: "blob"
+    })
+
+    const blob = new Blob([response.data])
+    const link = document.createElement("a")
+
+    link.href = window.URL.createObjectURL(blob)
+
+    link.download =
+      type === "csv"
+        ? `attendance_${reportDate}.csv`
+        : `attendance_${reportDate}.pdf`
+
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+
+  } catch (err) {
+    console.error("Export failed", err)
+  }
+
+  setShowExportMenu(false)
+}
 
   const getStatusColor = (value, threshold) => {
     if (value > threshold) return 'text-emerald-600';
@@ -210,13 +242,7 @@ export default function ReportsPage() {
                           <FileText className="w-4 h-4" />
                           Export as PDF
                         </button>
-                        <button
-                          onClick={() => handleExport('email')}
-                          className="w-full text-left px-3 py-2 hover:bg-slate-50 rounded-lg text-sm flex items-center gap-2"
-                        >
-                          <Mail className="w-4 h-4" />
-                          Email Report
-                        </button>
+                       
                       </div>
                     </motion.div>
                   )}

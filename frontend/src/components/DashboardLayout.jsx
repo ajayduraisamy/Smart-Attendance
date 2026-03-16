@@ -116,10 +116,10 @@ export default function DashboardLayout() {
             <AttendanceIcon className="w-5 h-5 flex-shrink-0" />
             {(isSidebarOpen || isMobileOpen) && <span>Attendance</span>}
           </NavLink>
-              <NavLink to="/app/leaves" className={linkClass} onClick={() => setIsMobileOpen(false)}>
+              {/* <NavLink to="/app/leaves" className={linkClass} onClick={() => setIsMobileOpen(false)}>
                 <LeavesIcon className="w-5 h-5 flex-shrink-0" />
                 {(isSidebarOpen || isMobileOpen) && <span>Leaves</span>}
-              </NavLink>
+              </NavLink> */}
               <NavLink to="/app/reports" className={linkClass} onClick={() => setIsMobileOpen(false)}>
                 <ReportsIcon className="w-5 h-5 flex-shrink-0" />
                 {(isSidebarOpen || isMobileOpen) && <span>Reports</span>}

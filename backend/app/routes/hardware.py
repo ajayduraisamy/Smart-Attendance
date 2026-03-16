@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.employee import Employee
+from app.models.device import Device
 
 from pydantic import BaseModel
 from typing import Optional
@@ -180,21 +181,42 @@ def get_face_preview(index: int, emp_id: str, db: Session = Depends(get_db)):
 
 
 @router.get("/download/employees-csv")
-def download_employees_csv(db: Session = Depends(get_db)):
-    """
-    Download all employees data as CSV file with custom filename
-    Format: HH-MM-DD-MM-YYYY (12-hour format)
-    """
-    # Get all employees
-    employees = db.query(Employee).all()
-    
-    # Create CSV in memory
+def download_employees_csv(
+    device_id: str,
+    api_key: str,
+    db: Session = Depends(get_db)
+):
+
+    # ------------------------------------------------
+    # 1. VERIFY DEVICE
+    # ------------------------------------------------
+    device = db.query(Device).filter(
+        Device.device_id == device_id,
+        Device.api_key == api_key,
+        Device.status == True
+    ).first()
+
+    if not device:
+        raise HTTPException(status_code=401, detail="Invalid device")
+
+    # ------------------------------------------------
+    # 2. GET ONLY DEVICE OFFICE EMPLOYEES
+    # ------------------------------------------------
+    employees = db.query(Employee).filter(
+        Employee.status == True,
+        Employee.office_id == device.office_id
+    ).all()
+
+    print(f"Preparing CSV for {len(employees)} employees (office {device.office_id})")
+
+    # ------------------------------------------------
+    # 3. CREATE CSV
+    # ------------------------------------------------
     output = StringIO()
     writer = csv.writer(output)
-    
-    # Write header row
+
     writer.writerow([
-        'id', 'emp_id', 'name', 'email', 'phone', 'address',
+        'id', 'emp_id', 'name', 'email', 'phone', 'address', 'photo',
         'gender', 'blood_group', 'date_of_birth', 'position', 'joined_date',
         'office_id', 'status', 'rfid_uid',
         'fingerprint_1', 'fingerprint_2', 'fingerprint_3', 'fingerprint_4',
@@ -202,31 +224,28 @@ def download_employees_csv(db: Session = Depends(get_db)):
         'face_embedding_1', 'face_embedding_2', 'face_embedding_3', 'face_embedding_4', 'face_embedding_5',
         'created_at', 'updated_at'
     ])
-    
-    # Write each employee's data
+
     for emp in employees:
+
         joined_date = emp.joined_date.strftime('%Y-%m-%d') if emp.joined_date else ''
         date_of_birth = emp.date_of_birth.strftime('%Y-%m-%d') if emp.date_of_birth else ''
         created_at = emp.created_at.strftime('%Y-%m-%d %H:%M:%S') if emp.created_at else ''
         updated_at = emp.updated_at.strftime('%Y-%m-%d %H:%M:%S') if emp.updated_at else ''
-        
+
         writer.writerow([
             emp.id, emp.emp_id, emp.name, emp.email or '', emp.phone or '', emp.address or '',
-            emp.gender or '', emp.blood_group or '', date_of_birth, emp.position, joined_date,
+            emp.photo or '', emp.gender or '', emp.blood_group or '', date_of_birth, emp.position, joined_date,
             emp.office_id, emp.status, emp.rfid_uid or '',
             emp.fingerprint_1 or '', emp.fingerprint_2 or '', emp.fingerprint_3 or '', emp.fingerprint_4 or '',
             emp.face_image_1 or '', emp.face_image_2 or '', emp.face_image_3 or '', emp.face_image_4 or '', emp.face_image_5 or '',
             emp.face_embedding_1 or '', emp.face_embedding_2 or '', emp.face_embedding_3 or '', emp.face_embedding_4 or '', emp.face_embedding_5 or '',
             created_at, updated_at
         ])
-    
-    # --- UPDATED FILENAME LOGIC ---
-    # %I = 12hr Hour, %M = Minute, %p = AM/PM, %d = Day, %m = Month, %Y = Year
-    # Example: employees_03-15-PM-13-03-2026.csv
-    time_stamp = datetime.now().strftime('%I-%M-%p-%d-%m-%Y')
-    filename = f"employees_{time_stamp}.csv"
-    
-    # Return as downloadable file
+
+    print("CSV generation completed")
+
+    filename = f"employees_{datetime.now().strftime('%I-%M-%p-%d-%m-%Y')}.csv"
+
     return Response(
         content=output.getvalue(),
         media_type="text/csv",

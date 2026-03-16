@@ -6,8 +6,8 @@ from pydantic import BaseModel, ConfigDict
 class AttendanceMark(BaseModel):
 
     emp_id: str
-    device_id: int
-    source: str = "ONLINE"  # ONLINE / OFFLINE
+    device_id: str     # ← change this
+    source: str = "ONLINE"  # ONLINE / OFFLINE / FACE / RFID / FINGER
 
 
 # Attendance Response
@@ -25,3 +25,4 @@ class AttendanceOut(BaseModel):
     check_out: time | None
 
     source: str
+    status: str

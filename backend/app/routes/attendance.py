@@ -31,16 +31,16 @@ def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
 
     emp = db.query(Employee).filter(Employee.emp_id == data.emp_id).first()
     if not emp:
-        raise HTTPException(404, "Employee not found")
+        raise HTTPException(status_code=404, detail="Employee not found")
 
-    device = db.query(Device).filter(Device.id == data.device_id).first()
+    device = db.query(Device).filter(Device.device_id == data.device_id).first()
     if not device:
-        raise HTTPException(404, "Device not found")
+        raise HTTPException(status_code=404, detail="Device not found")
 
-    today = datetime.now(IST).date()
-    now_time = datetime.now(IST).time()
+    now = datetime.now(IST)
+    today = now.date()
+    now_time = now.time()
 
-    # get today's records
     records = db.query(Attendance).filter(
         Attendance.employee_id == emp.id,
         Attendance.date == today
@@ -48,11 +48,10 @@ def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
 
     count = len(records)
 
-    # limit scans per day
     if count >= 7:
         return {"message": "Daily access limit reached"}
 
-    # FIRST SCAN → CHECK IN
+    # CHECK IN
     if count == 0:
         record = Attendance(
             employee_id=emp.id,
@@ -60,7 +59,8 @@ def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
             office_id=emp.office_id,
             date=today,
             check_in=now_time,
-            source=data.source
+            source=data.source,
+            status="CHECK_IN"
         )
 
         db.add(record)
@@ -68,19 +68,20 @@ def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
 
         return {
             "employee": emp.name,
-            "status": "CHECK IN",
+            "status": "CHECK_IN",
             "time": now_time.strftime("%H:%M:%S")
         }
 
-    # LAST SCAN → CHECK OUT
-    if count == 6:
+    # CHECK OUT
+    if count == 5:
         record = Attendance(
             employee_id=emp.id,
             device_id=device.id,
             office_id=emp.office_id,
             date=today,
             check_out=now_time,
-            source=data.source
+            source=data.source,
+            status="CHECK_OUT"
         )
 
         db.add(record)
@@ -88,18 +89,19 @@ def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
 
         return {
             "employee": emp.name,
-            "status": "CHECK OUT",
-            "time": str(now_time)
+            "status": "CHECK_OUT",
+            "time": now_time.strftime("%H:%M:%S")
         }
 
-    # MIDDLE SCANS → ACCESS
+    # ACCESS
     record = Attendance(
         employee_id=emp.id,
         device_id=device.id,
         office_id=emp.office_id,
         date=today,
         check_in=now_time,
-        source=data.source
+        source=data.source,
+        status="ACCESS"
     )
 
     db.add(record)
@@ -108,9 +110,8 @@ def mark_attendance(data: AttendanceMark, db: Session = Depends(get_db)):
     return {
         "employee": emp.name,
         "status": "ACCESS",
-        "time": str(now_time)
+        "time": now_time.strftime("%H:%M:%S")
     }
-
 
 # Get Attendance By Date
 @router.get("/by-date/{day}") 
@@ -134,7 +135,8 @@ def attendance_by_date(
             "date": att.date,
             "check_in": att.check_in,
             "check_out": att.check_out,
-            "source": att.source
+            "source": att.source,
+            "status": att.status
         } for att, emp in results
     ]
 
@@ -163,7 +165,8 @@ def attendance_by_employee(
             "date": att.date,
             "check_in": att.check_in,
             "check_out": att.check_out,
-            "source": att.source
+            "source": att.source,
+            "status": att.status
         } for att, emp in results
     ]
 
@@ -178,9 +181,9 @@ def attendance_summary(
         Employee.status == True
     ).count()
 
-    present = db.query(Attendance).filter(
-        Attendance.date == day
-    ).count()
+    present = db.query(Attendance.employee_id).filter(
+    Attendance.date == day
+).distinct().count()
 
     absent = total - present
 

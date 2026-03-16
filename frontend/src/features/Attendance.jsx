@@ -39,10 +39,11 @@ export default function AttendancePage() {
     fetchEmployees();
   }, []);
 
-  // Fetch attendance by date on initial load
-  useEffect(() => {
+useEffect(() => {
+  if (employees.length > 0) {
     fetchByDate();
-  }, []);
+  }
+}, [employees]);
 
   // Filter employees based on search term
   useEffect(() => {
@@ -157,8 +158,14 @@ export default function AttendancePage() {
     } else {
       // For date view
       const total = allEmployees?.length || 0;
-      const present = attendanceRecords?.filter(r => r.check_in).length || 0;
-      const absent = total - present;
+      const presentEmployees = new Set(
+  attendanceRecords
+    .filter(r => r.check_in)
+    .map(r => r.emp_id)
+);
+
+const present = presentEmployees.size;
+      const absent = Math.max(total - present, 0);
       const late = attendanceRecords?.filter(r => r.is_late).length || 0;
       
       setStats({ total, present, absent, late });
@@ -434,8 +441,9 @@ const formatTime = (timeString) => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Check In</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Check Out</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Attendance</th>
                   <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Source</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider"> Scan Type</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -450,30 +458,32 @@ const formatTime = (timeString) => {
                       <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-16" /></td>
                       <td className="px-6 py-4"><div className="h-6 bg-slate-200 rounded animate-pulse w-20" /></td>
                       <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-16" /></td>
+
                     </tr>
                   ))
                 ) : records.length > 0 ? (
                   records.map((record) => (
-                    <tr key={record.id || `${record.emp_id}-${record.date}`} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white text-sm font-medium">
-                            {record.name ? record.name.charAt(0).toUpperCase() : 'U'}
-                          </div>
-                          <span className="font-medium text-slate-900">{record.name || 'Unknown'}</span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-slate-600">{record.emp_id}</td>
-                      <td className="px-6 py-4 text-slate-600">{record.date}</td>
-                      <td className="px-6 py-4 text-slate-600 font-mono">{formatTime(record.check_in)}</td>
-                      <td className="px-6 py-4 text-slate-600 font-mono">{formatTime(record.check_out)}</td>
-                      <td className="px-6 py-4">{getStatusBadge(record)}</td>
-                      <td className="px-6 py-4">
-                        <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded-full text-xs">
-                          {record.source || 'Manual'}
-                        </span>
-                      </td>
-                    </tr>
+                    <tr key={record.id}>
+  <td className="px-6 py-4">{record.name}</td>
+  <td className="px-6 py-4">{record.emp_id}</td>
+  <td className="px-6 py-4">{record.date}</td>
+  <td className="px-6 py-4">{formatTime(record.check_in)}</td>
+  <td className="px-6 py-4">{formatTime(record.check_out)}</td>
+
+  <td className="px-6 py-4">{getStatusBadge(record)}</td>
+
+  <td className="px-6 py-4">
+    <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded-full text-xs">
+      {record.source}
+    </span>
+  </td>
+
+  <td className="px-6 py-4">
+    <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded-full text-xs">
+      {record.status}
+    </span>
+  </td>
+</tr>
                   ))
                 ) : (
                   <tr>

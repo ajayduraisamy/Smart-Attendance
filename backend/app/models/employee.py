@@ -28,7 +28,7 @@ class Employee(Base):
 
     address = Column(String(255), nullable=True)
 
-    photo = Column(String(255), nullable=True)
+    photo = Column(Text, nullable=True)
 
     gender = Column(String(10), nullable=True)
 

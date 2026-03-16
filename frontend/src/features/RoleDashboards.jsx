@@ -274,42 +274,7 @@ function BaseDashboard({ title }) {
           />
         </motion.div>
 
-        {/* Recent Activity Section */}
-        <motion.div 
-          className="bg-white rounded-xl border border-slate-200 overflow-hidden"
-          variants={fadeInUp}
-          initial="hidden"
-          animate="visible"
-        >
-          <div className="p-6 border-b border-slate-100">
-            <h3 className="font-semibold text-slate-900 text-lg">Recent Activity</h3>
-          </div>
-          <div className="divide-y divide-slate-100">
-            {loading ? (
-              [...Array(4)].map((_, i) => (
-                <div key={i} className="p-4 animate-pulse">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-slate-200 rounded-full" />
-                    <div className="flex-1">
-                      <div className="h-4 bg-slate-200 rounded w-1/3 mb-2" />
-                      <div className="h-3 bg-slate-200 rounded w-1/4" />
-                    </div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <>
-                <ActivityItem 
-                  user="Ajay D"
-                  action="checked in at 09:00 AM"
-                  time="4 hours ago"
-                  status="success"
-                />
-               
-              </>
-            )}
-          </div>
-        </motion.div>
+      
       </div>
     </div>
   );
