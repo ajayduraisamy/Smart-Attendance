@@ -33,8 +33,8 @@ export default function ApplyLeave() {
   };
 
   return (
-    <div className="max-w-lg bg-white p-6 rounded-xl shadow-sm">
-      <h1 className="text-xl font-semibold mb-4">Apply Leave</h1>
+    <div className="card" style={{ backgroundColor: 'var(--card-bg)' }}>
+      <h1 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Apply Leave</h1>
 
       <form className="space-y-3" onSubmit={submit}>
 
@@ -61,7 +61,7 @@ export default function ApplyLeave() {
         {error && <p className="text-red-600">{error}</p>}
         {message && <p className="text-green-600">{message}</p>}
 
-        <button className="bg-blue-600 text-white px-4 py-2 rounded-md">
+        <button className="btn-primary bg-gradient-to-br from-orange-500 to-amber-500">
           Apply Leave
         </button>
       </form>
@@ -71,7 +71,7 @@ export default function ApplyLeave() {
 
 function Field({ label, value, onChange, type = "text" }) {
   return (
-    <label className="block text-sm space-y-1">
+    <label className="block text-sm space-y-1" style={{ color: 'var(--text-primary)' }}>
       <span>{label}</span>
 
       <input
@@ -79,7 +79,7 @@ function Field({ label, value, onChange, type = "text" }) {
         value={value}
         onChange={(e) => onChange(e.target.value)}
         required
-        className="w-full border border-slate-300 rounded-md px-3 py-2"
+        className="input-field"
       />
     </label>
   );

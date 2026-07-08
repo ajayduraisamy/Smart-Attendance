@@ -192,18 +192,18 @@ const handleExport = async (type) => {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-30">
+      <div className="border-b sticky top-0 z-30" style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)' }}>
         <div className="px-8 py-5 max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
+              <div className="w-10 h-10 bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl flex items-center justify-center shadow-lg">
                 <FileText className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-bold text-slate-900">Reports & Analytics</h1>
-                <p className="text-sm text-slate-500">Comprehensive attendance reports and insights</p>
+                <h1 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Reports & Analytics</h1>
+                <p className="text-sm" style={{ color: 'var(--text-muted)' }}>Comprehensive attendance reports and insights</p>
               </div>
             </div>
             
@@ -212,7 +212,7 @@ const handleExport = async (type) => {
               <div className="relative">
                 <button
                   onClick={() => setShowExportMenu(!showExportMenu)}
-                  className="px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors flex items-center gap-2 text-slate-700"
+                  className="btn-secondary"
                 >
                   <Download className="w-4 h-4" />
                   Export
@@ -225,19 +225,26 @@ const handleExport = async (type) => {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 10 }}
-                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-slate-200 overflow-hidden z-40"
+                      className="absolute right-0 mt-2 w-48 rounded-lg shadow-xl overflow-hidden z-40"
+                      style={{ backgroundColor: 'var(--card-bg)', borderColor: 'var(--border-color)', borderWidth: '1px' }}
                     >
                       <div className="p-2">
                         <button
                           onClick={() => handleExport('csv')}
-                          className="w-full text-left px-3 py-2 hover:bg-slate-50 rounded-lg text-sm flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 rounded-lg text-sm flex items-center gap-2"
+                          style={{ color: 'var(--text-primary)' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--orange-bg)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <DownloadCloud className="w-4 h-4" />
                           Export as CSV
                         </button>
                         <button
                           onClick={() => handleExport('pdf')}
-                          className="w-full text-left px-3 py-2 hover:bg-slate-50 rounded-lg text-sm flex items-center gap-2"
+                          className="w-full text-left px-3 py-2 rounded-lg text-sm flex items-center gap-2"
+                          style={{ color: 'var(--text-primary)' }}
+                          onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--orange-bg)'}
+                          onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
                         >
                           <FileText className="w-4 h-4" />
                           Export as PDF
@@ -255,7 +262,7 @@ const handleExport = async (type) => {
                   loadAbsent();
                   loadMonthly();
                 }}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm"
+                className="btn-primary"
               >
                 <RefreshCw className="w-4 h-4" />
                 Refresh All
@@ -264,23 +271,27 @@ const handleExport = async (type) => {
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-1 mt-4 border-b border-slate-200">
+          <div className="flex gap-1 mt-4" style={{ borderBottom: '1px solid var(--border-color)' }}>
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-4 py-2 text-sm font-medium flex items-center gap-2 transition-all relative ${
                   activeTab === tab.id
-                    ? 'text-blue-600'
-                    : 'text-slate-500 hover:text-slate-700'
+                    ? 'text-orange-500'
+                    : ''
                 }`}
+                style={{
+                  color: activeTab === tab.id ? 'var(--orange-accent)' : 'var(--text-muted)'
+                }}
               >
                 <tab.icon className="w-4 h-4" />
                 {tab.label}
                 {activeTab === tab.id && (
                   <motion.div
                     layoutId="activeTab"
-                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600"
+                    className="absolute bottom-0 left-0 right-0 h-0.5"
+                    style={{ backgroundColor: 'var(--orange-accent)' }}
                   />
                 )}
               </button>
@@ -320,10 +331,10 @@ const handleExport = async (type) => {
               className="space-y-6"
             >
               {/* Daily Controls */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div className="card p-4">
                 <div className="flex flex-wrap items-end gap-4">
                   <div className="flex-1 min-w-[200px]">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
                       <Calendar className="w-4 h-4 inline mr-1" />
                       Select Date
                     </label>
@@ -331,13 +342,13 @@ const handleExport = async (type) => {
                       type="date" 
                       value={reportDate} 
                       onChange={(e) => setReportDate(e.target.value)} 
-                      className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                      className="input-field"
                     />
                   </div>
                   <button 
                     onClick={loadDaily}
                     disabled={loading.daily}
-                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium disabled:opacity-50"
+                    className="btn-primary disabled:opacity-50"
                   >
                     {loading.daily ? (
                       <Loader className="w-4 h-4 animate-spin" />
@@ -360,26 +371,22 @@ const handleExport = async (type) => {
                     title="Report Date"
                     value={formatDate(daily.date)}
                     icon={Calendar}
-                    color="#6366f1"
                   />
                   <SummaryCard
                     title="Total Employees"
                     value={daily.total_employees}
                     icon={Users}
-                    color="#10b981"
                   />
                   <SummaryCard
                     title="Present Today"
                     value={daily.present}
                     icon={UserCheck}
-                    color="#3b82f6"
                     subtitle={`${Math.round((daily.present / daily.total_employees) * 100)}% attendance`}
                   />
                   <SummaryCard
                     title="Absent Today"
                     value={daily.absent}
                     icon={UserMinus}
-                    color="#ef4444"
                     subtitle={`${Math.round((daily.absent / daily.total_employees) * 100)}% absent`}
                   />
                 </motion.div>
@@ -397,10 +404,10 @@ const handleExport = async (type) => {
               className="space-y-6"
             >
               {/* Absent Controls */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div className="card p-4">
                 <div className="flex flex-wrap items-end gap-4">
                   <div className="flex-1 min-w-[200px]">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
                       <Calendar className="w-4 h-4 inline mr-1" />
                       Select Date
                     </label>
@@ -408,11 +415,11 @@ const handleExport = async (type) => {
                       type="date" 
                       value={reportDate} 
                       onChange={(e) => setReportDate(e.target.value)} 
-                      className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                      className="input-field"
                     />
                   </div>
                   <div className="flex-1 min-w-[250px]">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
                       <Search className="w-4 h-4 inline mr-1" />
                       Filter Employees
                     </label>
@@ -421,13 +428,13 @@ const handleExport = async (type) => {
                       value={absentFilter}
                       onChange={(e) => setAbsentFilter(e.target.value)}
                       placeholder="Search by name, ID, or position..."
-                      className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                      className="input-field"
                     />
                   </div>
                   <button 
                     onClick={loadAbsent}
                     disabled={loading.absent}
-                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium disabled:opacity-50"
+                    className="btn-primary disabled:opacity-50"
                   >
                     {loading.absent ? (
                       <Loader className="w-4 h-4 animate-spin" />
@@ -440,51 +447,51 @@ const handleExport = async (type) => {
               </div>
 
               {/* Absent Table */}
-              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-                  <h2 className="font-semibold text-slate-900 flex items-center gap-2">
+              <div className="card overflow-hidden">
+                <div className="p-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-color)' }}>
+                  <h2 className="font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
                     <UserMinus className="w-5 h-5 text-red-500" />
                     Absent Employees
                   </h2>
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
                     {filteredAbsent.length} {filteredAbsent.length === 1 ? 'employee' : 'employees'} absent
                   </span>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-slate-50">
+                    <thead style={{ backgroundColor: 'var(--orange-bg)' }}>
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Employee</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Employee ID</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Position</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Employee</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Employee ID</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Position</th>
      
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200">
+                    <tbody className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
                       {loading.absent ? (
                         [...Array(3)].map((_, i) => (
                           <tr key={i}>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-32" /></td>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-20" /></td>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-24" /></td>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-24" /></td>
-                            <td className="px-6 py-4"><div className="h-6 bg-slate-200 rounded animate-pulse w-20" /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-32" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-20" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-24" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-24" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-6 rounded animate-pulse w-20" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
                           </tr>
                         ))
                       ) : filteredAbsent.length > 0 ? (
                         filteredAbsent.map((emp) => (
-                          <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                          <tr key={emp.id} className="hover:bg-orange-50 transition-colors">
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-red-400 to-red-500 flex items-center justify-center text-white text-sm font-medium">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-400 to-orange-500 flex items-center justify-center text-white text-sm font-medium">
                                   {emp.name?.charAt(0) || '?'}
                                 </div>
-                                <span className="font-medium text-slate-900">{emp.name}</span>
+                                <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{emp.name}</span>
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-slate-600">{emp.emp_id}</td>
-                            <td className="px-6 py-4 text-slate-600">{emp.position || '—'}</td>
+                            <td className="px-6 py-4" style={{ color: 'var(--text-secondary)' }}>{emp.emp_id}</td>
+                            <td className="px-6 py-4" style={{ color: 'var(--text-secondary)' }}>{emp.position || '\u2014'}</td>
                             
                             <td className="px-6 py-4">
                               <span className="px-2 py-1 bg-red-100 text-red-700 rounded-full text-xs font-medium">
@@ -495,10 +502,10 @@ const handleExport = async (type) => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={5} className="px-6 py-12 text-center text-slate-500">
-                            <UserCheck className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                          <td colSpan={5} className="px-6 py-12 text-center" style={{ color: 'var(--text-muted)' }}>
+                            <UserCheck className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
                             <p>No absent employees found</p>
-                            <p className="text-sm text-slate-400 mt-1">All employees are present today</p>
+                            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>All employees are present today</p>
                           </td>
                         </tr>
                       )}
@@ -519,23 +526,23 @@ const handleExport = async (type) => {
               className="space-y-6"
             >
               {/* Monthly Controls */}
-              <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+              <div className="card p-4">
                 <div className="flex flex-wrap items-end gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Year</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Year</label>
                     <input 
                       type="number" 
                       value={year} 
                       onChange={(e) => setYear(parseInt(e.target.value))}
-                      className="w-28 border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                      className="input-field w-28"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Month</label>
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Month</label>
                     <select 
                       value={month} 
                       onChange={(e) => setMonth(parseInt(e.target.value))}
-                      className="w-32 border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                      className="input-field w-32"
                     >
                       {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
                         <option key={m} value={m}>
@@ -545,7 +552,7 @@ const handleExport = async (type) => {
                     </select>
                   </div>
                   <div className="flex-1 min-w-[250px]">
-                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                    <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
                       <Search className="w-4 h-4 inline mr-1" />
                       Filter Records
                     </label>
@@ -554,13 +561,13 @@ const handleExport = async (type) => {
                       value={monthlyFilter}
                       onChange={(e) => setMonthlyFilter(e.target.value)}
                       placeholder="Search by employee name or ID..."
-                      className="w-full border border-slate-200 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-600 focus:border-transparent transition-all"
+                      className="input-field"
                     />
                   </div>
                   <button 
                     onClick={loadMonthly}
                     disabled={loading.monthly}
-                    className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium disabled:opacity-50"
+                    className="btn-primary disabled:opacity-50"
                   >
                     {loading.monthly ? (
                       <Loader className="w-4 h-4 animate-spin" />
@@ -579,79 +586,75 @@ const handleExport = async (type) => {
                     title="Total Records"
                     value={monthly.length}
                     icon={FileText}
-                    color="#6366f1"
                   />
                   <StatCard
                     title="Present Days"
                     value={monthly.filter(r => r.type === 'present' || r.in_time).length}
                     icon={CheckCircle2}
-                    color="#10b981"
                   />
                   <StatCard
                     title="Absent Days"
                     value={monthly.filter(r => r.type === 'absent' || !r.in_time).length}
                     icon={UserMinus}
-                    color="#ef4444"
                   />
                   <StatCard
                     title="Late Arrivals"
                     value={monthly.filter(r => r.is_late).length}
                     icon={Clock}
-                    color="#f59e0b"
                   />
                 </div>
               )}
 
               {/* Monthly Table */}
-              <div className="bg-white rounded-xl border border-slate-200 overflow-hidden shadow-sm">
-                <div className="p-4 border-b border-slate-200 flex items-center justify-between">
-                  <h2 className="font-semibold text-slate-900 flex items-center gap-2">
-                    <BarChart3 className="w-5 h-5 text-blue-500" />
+              <div className="card overflow-hidden">
+                <div className="p-4 flex items-center justify-between" style={{ borderBottom: '1px solid var(--border-color)' }}>
+                  <h2 className="font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                    <BarChart3 className="w-5 h-5" style={{ color: 'var(--orange-accent)' }} />
                     Monthly Attendance Records
                   </h2>
-                  <span className="text-sm text-slate-500">
+                  <span className="text-sm" style={{ color: 'var(--text-muted)' }}>
                     {filteredMonthly.length} records found
                   </span>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm">
-                    <thead className="bg-slate-50">
+                    <thead style={{ backgroundColor: 'var(--orange-bg)' }}>
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Employee</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">ID</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Type</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Check In</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Check Out</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Employee</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>ID</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Date</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Type</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Check In</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Check Out</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Status</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200">
+                    <tbody className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
                       {loading.monthly ? (
                         [...Array(5)].map((_, i) => (
                           <tr key={i}>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-32" /></td>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-20" /></td>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-24" /></td>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-16" /></td>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-16" /></td>
-                            <td className="px-6 py-4"><div className="h-4 bg-slate-200 rounded animate-pulse w-16" /></td>
-                            <td className="px-6 py-4"><div className="h-6 bg-slate-200 rounded animate-pulse w-20" /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-32" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-20" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-24" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-16" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-16" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-4 rounded animate-pulse w-16" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
+                            <td className="px-6 py-4"><div className="h-6 rounded animate-pulse w-20" style={{ backgroundColor: 'var(--skeleton-bg)' }} /></td>
                           </tr>
                         ))
                       ) : filteredMonthly.length > 0 ? (
                         filteredMonthly.map((record, idx) => (
-                          <tr key={`${record.id}-${idx}`} className="hover:bg-slate-50 transition-colors">
+                          <tr key={`${record.id}-${idx}`} className="hover:bg-orange-50 transition-colors">
                             <td className="px-6 py-4">
                               <div className="flex items-center gap-3">
-                                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 flex items-center justify-center text-white text-sm font-medium">
+                                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 flex items-center justify-center text-white text-sm font-medium">
                                   {record.emp_name?.charAt(0) || '?'}
                                 </div>
-                                <span className="font-medium text-slate-900">{record.emp_name}</span>
+                                <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{record.emp_name}</span>
                               </div>
                             </td>
-                            <td className="px-6 py-4 text-slate-600">{record.emp_id}</td>
-                            <td className="px-6 py-4 text-slate-600">{formatDate(record.date)}</td>
+                            <td className="px-6 py-4" style={{ color: 'var(--text-secondary)' }}>{record.emp_id}</td>
+                            <td className="px-6 py-4" style={{ color: 'var(--text-secondary)' }}>{formatDate(record.date)}</td>
                             <td className="px-6 py-4">
                               <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                                 record.type === 'present' || record.in_time 
@@ -661,8 +664,8 @@ const handleExport = async (type) => {
                                 {record.type || (record.in_time ? 'Present' : 'Absent')}
                               </span>
                             </td>
-                            <td className="px-6 py-4 font-mono text-slate-600">{formatTime(record.in_time)}</td>
-                            <td className="px-6 py-4 font-mono text-slate-600">{formatTime(record.out_time)}</td>
+                            <td className="px-6 py-4 font-mono" style={{ color: 'var(--text-secondary)' }}>{formatTime(record.in_time)}</td>
+                            <td className="px-6 py-4 font-mono" style={{ color: 'var(--text-secondary)' }}>{formatTime(record.out_time)}</td>
                             <td className="px-6 py-4">
                               {record.is_late ? (
                                 <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-medium">
@@ -682,10 +685,10 @@ const handleExport = async (type) => {
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={7} className="px-6 py-12 text-center text-slate-500">
-                            <BarChart3 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                          <td colSpan={7} className="px-6 py-12 text-center" style={{ color: 'var(--text-muted)' }}>
+                            <BarChart3 className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
                             <p>No records found for this period</p>
-                            <p className="text-sm text-slate-400 mt-1">Try selecting a different month</p>
+                            <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>Try selecting a different month</p>
                           </td>
                         </tr>
                       )}
@@ -703,34 +706,34 @@ const handleExport = async (type) => {
 }
 
 // Helper Components
-function SummaryCard({ title, value, icon: Icon, color, subtitle }) {
+function SummaryCard({ title, value, icon: Icon, subtitle }) {
   return (
     <motion.div 
       whileHover={{ y: -2 }}
-      className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-all"
+      className="card hover:shadow-md transition-all p-4"
     >
       <div className="flex items-center justify-between mb-3">
-        <p className="text-sm font-medium text-slate-500">{title}</p>
-        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
-          <Icon className="w-5 h-5" style={{ color }} />
+        <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{title}</p>
+        <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--orange-bg)' }}>
+          <Icon className="w-5 h-5" style={{ color: 'var(--orange-accent)' }} />
         </div>
       </div>
-      <p className="text-2xl font-bold text-slate-900">{value}</p>
-      {subtitle && <p className="text-sm text-slate-500 mt-1">{subtitle}</p>}
+      <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{value}</p>
+      {subtitle && <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>{subtitle}</p>}
     </motion.div>
   );
 }
 
-function StatCard({ title, value, icon: Icon, color }) {
+function StatCard({ title, value, icon: Icon }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+    <div className="card p-4">
       <div className="flex items-center gap-3 mb-2">
-        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}15` }}>
-          <Icon className="w-4 h-4" style={{ color }} />
+        <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'var(--orange-bg)' }}>
+          <Icon className="w-4 h-4" style={{ color: 'var(--orange-accent)' }} />
         </div>
-        <p className="text-sm font-medium text-slate-600">{title}</p>
+        <p className="text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>{title}</p>
       </div>
-      <p className="text-2xl font-bold text-slate-900">{value}</p>
+      <p className="text-2xl font-bold" style={{ color: 'var(--text-primary)' }}>{value}</p>
     </div>
   );
 }

@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import client from "../api/client";
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -111,14 +110,12 @@ export default function Dashboard() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Premium Header with Animated Gradient */}
       <motion.div 
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 shadow-2xl"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 p-8 shadow-2xl"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 100 }}
       >
-        {/* Animated Background Elements */}
         <motion.div 
           className="absolute inset-0 bg-white/10 backdrop-blur-sm"
           animate={{
@@ -149,7 +146,6 @@ export default function Dashboard() {
           transition={{ duration: 4, repeat: Infinity }}
         />
 
-        {/* Floating Particles */}
         {[...Array(5)].map((_, i) => (
           <motion.div
             key={i}
@@ -240,7 +236,6 @@ export default function Dashboard() {
         </div>
       </motion.div>
 
-      {/* Error Message */}
       {error && (
         <motion.div 
           className="p-4 bg-red-50 border-l-4 border-red-500 rounded-lg shadow-sm"
@@ -255,7 +250,6 @@ export default function Dashboard() {
         </motion.div>
       )}
 
-      {/* Main Stats Cards - All same size */}
       <motion.div 
         className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-5"
         variants={containerVariants}
@@ -267,7 +261,7 @@ export default function Dashboard() {
           value={data?.offices}
           loading={loading}
           icon={<Building2 className="w-5 h-5" />}
-          gradient="from-purple-500 to-pink-500"
+          gradient="from-orange-500 to-amber-500"
         />
 
         <StatCard
@@ -275,7 +269,7 @@ export default function Dashboard() {
           value={data?.devices}
           loading={loading}
           icon={<HardDrive className="w-5 h-5" />}
-          gradient="from-blue-500 to-cyan-500"
+          gradient="from-orange-500 to-amber-500"
         />
 
         <StatCard
@@ -283,7 +277,7 @@ export default function Dashboard() {
           value={data?.total_employees}
           loading={loading}
           icon={<Users className="w-5 h-5" />}
-          gradient="from-indigo-500 to-purple-500"
+          gradient="from-orange-500 to-amber-500"
         />
 
         <StatCard
@@ -291,7 +285,7 @@ export default function Dashboard() {
           value={data?.present}
           loading={loading}
           icon={<UserCheck className="w-5 h-5" />}
-          gradient="from-emerald-500 to-teal-500"
+          gradient="from-orange-500 to-amber-500"
         />
 
         <StatCard
@@ -299,7 +293,7 @@ export default function Dashboard() {
           value={data?.absent}
           loading={loading}
           icon={<UserMinus className="w-5 h-5" />}
-          gradient="from-rose-500 to-red-500"
+          gradient="from-orange-500 to-amber-500"
         />
       </motion.div>
     </motion.div>
@@ -317,7 +311,6 @@ function StatCard({ title, value, loading, icon, gradient }) {
       onHoverEnd={() => setIsHovered(false)}
       className="relative group h-full"
     >
-      {/* Animated Background Gradient */}
       <motion.div 
         className={`absolute inset-0 bg-gradient-to-r ${gradient} rounded-xl opacity-0 group-hover:opacity-10 transition-opacity duration-300`}
         animate={{
@@ -325,9 +318,9 @@ function StatCard({ title, value, loading, icon, gradient }) {
         }}
       />
       
-      {/* Card Content */}
-      <div className="relative rounded-xl bg-white p-5 shadow-lg border border-slate-100 overflow-hidden h-full">
-        {/* Animated Pattern Background */}
+      <div 
+        className="relative card p-5 overflow-hidden h-full"
+      >
         <motion.div 
           className="absolute inset-0 opacity-5"
           animate={{
@@ -335,12 +328,11 @@ function StatCard({ title, value, loading, icon, gradient }) {
           }}
           transition={{ duration: 0.5 }}
           style={{
-            backgroundImage: 'radial-gradient(circle at 2px 2px, #6366f1 1px, transparent 0)',
+            backgroundImage: 'radial-gradient(circle at 2px 2px, #f97316 1px, transparent 0)',
             backgroundSize: '20px 20px',
           }}
         />
 
-        {/* Glow Effect on Hover */}
         <motion.div 
           className="absolute -inset-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-30"
           animate={{
@@ -355,7 +347,7 @@ function StatCard({ title, value, loading, icon, gradient }) {
         
         <div className="relative">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-sm font-medium text-slate-500">{title}</p>
+            <p className="text-sm font-medium" style={{ color: 'var(--text-muted)' }}>{title}</p>
             <motion.div 
               className={`p-2 rounded-lg bg-gradient-to-r ${gradient} text-white shadow-lg`}
               animate={{ 
@@ -370,24 +362,16 @@ function StatCard({ title, value, loading, icon, gradient }) {
 
           {loading ? (
             <motion.div 
-              className="h-8 w-16 bg-gradient-to-r from-slate-200 via-slate-300 to-slate-200 rounded"
-              animate={{ 
-                backgroundPosition: ['0% 0%', '100% 0%'],
-                opacity: [0.5, 1, 0.5]
-              }}
-              transition={{ 
-                duration: 1.5, 
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              style={{
-                backgroundSize: '200% 100%'
-              }}
+              className="h-8 w-16 rounded"
+              style={{ backgroundColor: 'var(--skeleton-bg)' }}
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
             />
           ) : (
             <div className="flex items-end gap-2">
               <motion.p 
-                className="text-3xl font-bold text-slate-900"
+                className="text-3xl font-bold"
+                style={{ color: 'var(--text-primary)' }}
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ 

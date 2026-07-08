@@ -207,7 +207,7 @@ if (previewRes.data.image) {
   }, 2000);
   
   return () => clearInterval(interval);
-}, [enrollingBio.waiting, enrollingBio.type, enrollingBio.index, form.emp_id]); // ← Added form.emp_id here
+}, [enrollingBio.waiting, enrollingBio.type, enrollingBio.index, form.emp_id]);
 
   // Send command to hardware
   const captureBiometric = async (type, index = null) => {
@@ -319,22 +319,22 @@ if (previewRes.data.image) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+      <div className="sticky top-0 z-10 shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-primary)' }}>
         <div className="px-6 py-4">
           <div className="flex items-center gap-4">
             <button 
               onClick={() => window.history.back()}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-black/5 rounded-lg transition-colors"
             >
-              <ArrowLeft className="h-5 w-5 text-gray-600" />
+              <ArrowLeft className="h-5 w-5" style={{ color: 'var(--text-secondary)' }} />
             </button>
             <div className="flex items-center gap-3">
-              <Shield className="h-8 w-8 text-blue-600" />
+              <Shield className="h-8 w-8" style={{ color: 'var(--accent)' }} />
               <div>
-                <h1 className="text-xl font-bold text-gray-900">Add New Employee</h1>
-                <p className="text-sm text-gray-500">
+                <h1 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Add New Employee</h1>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   {employeeSaved 
                     ? "Employee saved - now capture biometrics" 
                     : "Fill details and save employee first"}
@@ -363,8 +363,8 @@ if (previewRes.data.image) {
 
         {/* Info Banner when employee not saved */}
         {!employeeSaved && (
-          <div className="mb-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-blue-700 text-sm flex items-center gap-2">
+          <div className="mb-6 rounded-lg p-4" style={{ backgroundColor: 'var(--accent-light)', border: '1px solid var(--accent)' }}>
+            <p className="text-sm flex items-center gap-2" style={{ color: 'var(--accent)' }}>
               <AlertCircle className="h-4 w-4" />
               Step 1: Fill employee details and click "Save Employee" first. 
               Biometric enrollment will be available after saving.
@@ -373,84 +373,84 @@ if (previewRes.data.image) {
         )}
 
         {/* Main Form */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+        <div className="card overflow-hidden">
           <form onSubmit={handleSubmit} className="p-6">
             {/* Basic Information */}
             <div className="mb-8">
-              <h2 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Briefcase className="h-5 w-5 text-blue-600" />
+              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                <Briefcase className="h-5 w-5" style={{ color: 'var(--accent)' }} />
                 Basic Information
               </h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
                     Employee ID <span className="text-red-500">*</span>
                   </label>
                   <input
                     required
                     value={form.emp_id}
                     onChange={e => setForm({...form, emp_id: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="EMP001"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
                     Full Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     required
                     value={form.name}
                     onChange={e => setForm({...form, name: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="John Doe"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Email</label>
                   <input
                     type="email"
                     value={form.email}
                     onChange={e => setForm({...form, email: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="john@company.com"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Phone</label>
                   <input
                     value={form.phone}
                     onChange={e => setForm({...form, phone: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="+1234567890"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Address</label>
                   <input
                     value={form.address}
                     onChange={e => setForm({...form, address: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="123 Main St, City"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Gender</label>
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Gender</label>
                   <select
                     value={form.gender}
                     onChange={e => setForm({...form, gender: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     disabled={employeeSaved}
                   >
                     <option value="">Select Gender</option>
@@ -461,43 +461,43 @@ if (previewRes.data.image) {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Blood Group</label>
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Blood Group</label>
                   <input
                     value={form.blood_group}
                     onChange={e => setForm({...form, blood_group: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="O+"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Date of Birth</label>
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>Date of Birth</label>
                   <input
                     type="date"
                     value={form.date_of_birth}
                     onChange={e => setForm({...form, date_of_birth: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
                     Position <span className="text-red-500">*</span>
                   </label>
                   <input
                     required
                     value={form.position}
                     onChange={e => setForm({...form, position: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder="Software Engineer"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
                     Joined Date <span className="text-red-500">*</span>
                   </label>
                   <input
@@ -505,20 +505,20 @@ if (previewRes.data.image) {
                     required
                     value={form.joined_date}
                     onChange={e => setForm({...form, joined_date: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     disabled={employeeSaved}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
                     Office <span className="text-red-500">*</span>
                   </label>
                   <select
                     required
                     value={form.office_id}
                     onChange={e => setForm({...form, office_id: e.target.value})}
-                    className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field disabled:opacity-60 disabled:cursor-not-allowed"
                     disabled={employeeSaved}
                   >
                     <option value="">Select Office</option>
@@ -529,7 +529,7 @@ if (previewRes.data.image) {
                 </div>
 
                 <div>
-<label className="block text-sm font-medium text-gray-700 mb-1">
+<label className="block text-sm font-medium mb-1" style={{ color: 'var(--text-secondary)' }}>
 Profile Photo
 </label>
 
@@ -537,7 +537,7 @@ Profile Photo
   type="file"
   accept="image/*"
   onChange={handlePhotoUpload}
-  className="w-full p-2.5 border border-gray-300 rounded-lg"
+  className="w-full input-field"
 />
 
 {form.photo && (
@@ -545,6 +545,7 @@ Profile Photo
     src={form.photo}
     alt="preview"
     className="mt-2 w-24 h-24 object-cover rounded-lg border"
+    style={{ borderColor: 'var(--border-primary)' }}
   />
 )}
 </div>
@@ -554,10 +555,10 @@ Profile Photo
 
             {/* Biometric Enrollment - Only show after employee is saved */}
             {employeeSaved && (
-              <div className="mb-8 pt-6 border-t border-gray-200">
+              <div className="mb-8 pt-6 border-t" style={{ borderColor: 'var(--border-primary)' }}>
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                    <Fingerprint className="h-5 w-5 text-blue-600" />
+                  <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                    <Fingerprint className="h-5 w-5" style={{ color: 'var(--accent)' }} />
                     Biometric Enrollment
                   </h2>
                   
@@ -565,14 +566,15 @@ Profile Photo
                   <button
                     type="button"
                     onClick={resetFaceBiometrics}
-                    className="px-3 py-1.5 text-sm bg-orange-50 text-orange-600 rounded-lg hover:bg-orange-100 flex items-center gap-2 transition-colors"
+                    className="px-3 py-1.5 text-sm rounded-lg flex items-center gap-2 transition-colors"
+                    style={{ backgroundColor: 'var(--accent-light)', color: 'var(--accent)' }}
                   >
                     <RefreshCw className="h-4 w-4" />
                     Reset Face Only
                   </button>
                 </div>
                 
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
                   Step 2: Click buttons below to capture biometric data from Raspberry Pi
                 </p>
                 
@@ -581,7 +583,7 @@ Profile Photo
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <CreditCard className="h-5 w-5 text-purple-600" />
-                      <span className="font-medium text-gray-700">RFID Card</span>
+                      <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>RFID Card</span>
                       {rfidStatus && (
                         <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-mono">
                           {rfidStatus}
@@ -593,11 +595,24 @@ Profile Photo
                       type="button"
                       onClick={() => captureBiometric('rfid')}
                       disabled={enrollingBio.waiting}
-                      className={`w-full p-3 rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                      className={`w-full p-3 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${
                         rfidStatus
                           ? 'bg-green-50 text-green-700 border border-green-200'
-                          : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
-                      } disabled:opacity-50`}
+                          : enrollingBio.waiting && enrollingBio.type === 'rfid'
+                          ? 'animate-pulse'
+                          : ''
+                      }`}
+                      style={{
+                        backgroundColor: rfidStatus
+                          ? undefined
+                          : 'var(--accent-light)',
+                        color: rfidStatus
+                          ? undefined
+                          : 'var(--accent)',
+                        borderColor: rfidStatus
+                          ? undefined
+                          : 'var(--accent)'
+                      }}
                     >
                       {enrollingBio.waiting && enrollingBio.type === 'rfid' ? (
                         <>
@@ -619,7 +634,7 @@ Profile Photo
 
                     {/* Show hint when waiting */}
                     {enrollingBio.waiting && enrollingBio.type === 'rfid' && (
-                      <div className="text-xs text-purple-600 bg-purple-50 p-2 rounded-lg text-center animate-pulse">
+                      <div className="text-xs text-center rounded-lg p-2 animate-pulse" style={{ color: 'var(--accent)', backgroundColor: 'var(--accent-light)' }}>
                         Please tap RFID card on the reader...
                       </div>
                     )}
@@ -629,7 +644,7 @@ Profile Photo
                   <div className="space-y-3">
                     <div className="flex items-center gap-2">
                       <Fingerprint className="h-5 w-5 text-green-600" />
-                      <span className="font-medium text-gray-700">Fingerprints</span>
+                      <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>Fingerprints</span>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {[1, 2, 3, 4].map(i => (
@@ -638,13 +653,25 @@ Profile Photo
                           type="button"
                           onClick={() => captureBiometric('finger', i)}
                           disabled={enrollingBio.waiting || fingerStatus[i]}
-                          className={`p-3 rounded-lg text-sm font-medium transition-colors ${
+                          className={`p-3 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
                             fingerStatus[i]
                               ? 'bg-green-100 text-green-700'
                               : enrollingBio.waiting && enrollingBio.type === 'finger' && enrollingBio.index === i
-                              ? 'bg-blue-100 text-blue-700 animate-pulse'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          } disabled:opacity-50`}
+                              ? 'animate-pulse'
+                              : ''
+                          }`}
+                          style={
+                            !fingerStatus[i]
+                              ? {
+                                  backgroundColor: enrollingBio.waiting && enrollingBio.type === 'finger' && enrollingBio.index === i
+                                    ? 'var(--accent-light)'
+                                    : 'var(--bg-tertiary)',
+                                  color: enrollingBio.waiting && enrollingBio.type === 'finger' && enrollingBio.index === i
+                                    ? 'var(--accent)'
+                                    : 'var(--text-secondary)'
+                                }
+                              : undefined
+                          }
                         >
                           {fingerStatus[i] ? (
                             <div className="flex items-center justify-center gap-1">
@@ -669,7 +696,7 @@ Profile Photo
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Camera className="h-5 w-5 text-orange-600" />
-                        <span className="font-medium text-gray-700">Face Recognition</span>
+                        <span className="font-medium" style={{ color: 'var(--text-secondary)' }}>Face Recognition</span>
                       </div>
                     </div>
                     
@@ -681,13 +708,25 @@ Profile Photo
                               type="button"
                               onClick={() => captureBiometric('face', i)}
                               disabled={enrollingBio.waiting}
-                              className={`flex-1 p-3 rounded-lg text-sm font-medium transition-colors ${
+                              className={`flex-1 p-3 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
                                 facePreviews[i]
                                   ? 'bg-green-100 text-green-700'
                                   : enrollingBio.waiting && enrollingBio.type === 'face' && enrollingBio.index === i
-                                  ? 'bg-blue-100 text-blue-700 animate-pulse'
-                                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                              } disabled:opacity-50`}
+                                  ? 'animate-pulse'
+                                  : ''
+                              }`}
+                              style={{
+                                backgroundColor: facePreviews[i]
+                                  ? undefined
+                                  : enrollingBio.waiting && enrollingBio.type === 'face' && enrollingBio.index === i
+                                  ? 'var(--accent-light)'
+                                  : 'var(--bg-tertiary)',
+                                color: facePreviews[i]
+                                  ? undefined
+                                  : enrollingBio.waiting && enrollingBio.type === 'face' && enrollingBio.index === i
+                                  ? 'var(--accent)'
+                                  : 'var(--text-secondary)'
+                              }}
                             >
                               {facePreviews[i] ? (
                                 <div className="flex items-center justify-center gap-1">
@@ -709,7 +748,8 @@ Profile Photo
                                 <button
                                   type="button"
                                   onClick={() => clearFacePreview(i)}
-                                  className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                                  className="p-2 rounded-lg transition-colors"
+                                  style={{ backgroundColor: '#fef2f2', color: '#dc2626' }}
                                   title="Clear preview"
                                 >
                                   <X className="h-4 w-4" />
@@ -717,7 +757,8 @@ Profile Photo
                                 <button
                                   type="button"
                                   onClick={() => retryFaceCapture(i)}
-                                  className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors"
+                                  className="p-2 rounded-lg transition-colors"
+                                  style={{ backgroundColor: 'var(--accent-light)', color: 'var(--accent)' }}
                                   title="Retry capture"
                                 >
                                   <RefreshCw className="h-4 w-4" />
@@ -728,7 +769,7 @@ Profile Photo
                           
                           {/* Face Preview */}
                           {facePreviews[i] && (
-                            <div className="relative mt-2 border rounded-lg overflow-hidden bg-gray-50">
+                            <div className="relative mt-2 border rounded-lg overflow-hidden" style={{ backgroundColor: 'var(--bg-tertiary)', borderColor: 'var(--border-primary)' }}>
                              <img 
   src={facePreviews[i]} 
   alt={`Face ${i} preview`}
@@ -748,18 +789,18 @@ Profile Photo
             )}
 
             {/* Form Actions */}
-            <div className="flex justify-end gap-3 pt-6 border-t">
+            <div className="flex justify-end gap-3 pt-6 border-t" style={{ borderColor: 'var(--border-primary)' }}>
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                className="btn-secondary"
               >
                 Full Reset
               </button>
               <button
                 type="submit"
                 disabled={loading || employeeSaved}
-                className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 transition-colors text-sm font-medium"
+                className="btn-primary disabled:opacity-50"
               >
                 {loading ? (
                   <>

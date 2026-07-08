@@ -19,7 +19,6 @@ import {
 } from 'lucide-react';
 import client from '../api/client';
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -57,7 +56,7 @@ const tableRowVariants = {
   },
   hover: {
     scale: 1.01,
-    backgroundColor: "rgba(99, 102, 241, 0.05)",
+    backgroundColor: "rgba(249, 115, 22, 0.05)",
     transition: {
       type: "spring",
       stiffness: 400,
@@ -195,7 +194,6 @@ export default function DevicesPage() {
     return office ? office.name : '-';
   };
 
-  // Filter devices
   const filteredDevices = list.filter(device => {
     const matchesSearch = device.device_id.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          device.api_key?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -214,9 +212,8 @@ export default function DevicesPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Header Section */}
       <motion.div 
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-cyan-500 to-teal-500 p-8 shadow-xl"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 p-8 shadow-xl"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 100 }}
@@ -255,7 +252,6 @@ export default function DevicesPage() {
         </div>
       </motion.div>
 
-      {/* Messages */}
       <AnimatePresence>
         {error && (
           <motion.div 
@@ -285,23 +281,22 @@ export default function DevicesPage() {
         )}
       </AnimatePresence>
 
-      {/* Form Section */}
       <motion.div 
-        className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden"
+        className="card overflow-hidden"
         variants={itemVariants}
         initial="hidden"
         animate="visible"
       >
-        <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-b">
-          <h2 className="font-semibold text-slate-800 flex items-center gap-2">
+        <div className="px-6 py-4" style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)' }}>
+          <h2 className="font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
             {editingId ? (
               <>
-                <Pencil className="w-4 h-4 text-yellow-600" />
+                <Pencil className="w-4 h-4" style={{ color: 'var(--orange-accent)' }} />
                 Edit Device
               </>
             ) : (
               <>
-                <Plus className="w-4 h-4 text-blue-600" />
+                <Plus className="w-4 h-4" style={{ color: 'var(--orange-accent)' }} />
                 Register New Device
               </>
             )}
@@ -314,18 +309,25 @@ export default function DevicesPage() {
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
                 Device ID <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <HardDrive className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <HardDrive className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   value={deviceId}
                   onChange={(e) => setDeviceId(e.target.value)}
                   required
                   disabled={editingId !== null}
                   placeholder="Enter unique device ID"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none disabled:bg-slate-100 disabled:cursor-not-allowed"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border transition-all outline-none"
+                  style={{ 
+                    borderColor: 'var(--border-color)', 
+                    backgroundColor: 'var(--input-bg)',
+                    color: 'var(--text-primary)'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
               </div>
             </motion.div>
@@ -334,16 +336,23 @@ export default function DevicesPage() {
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
                 Office <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
                 <select
                   value={officeId}
                   onChange={(e) => setOfficeId(e.target.value)}
                   required
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none appearance-none bg-white"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border transition-all outline-none appearance-none"
+                  style={{ 
+                    borderColor: 'var(--border-color)', 
+                    backgroundColor: 'var(--input-bg)',
+                    color: 'var(--text-primary)'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 >
                   <option value="">Select an office</option>
                   {offices.map((o) => (
@@ -360,11 +369,11 @@ export default function DevicesPage() {
             <motion.button
               type="submit"
               disabled={loading}
-              className={`px-6 py-3 rounded-lg text-white font-medium flex items-center gap-2 ${
+              className={`px-6 py-3 rounded-lg text-white font-medium flex items-center gap-2 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 ${
                 editingId 
                   ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' 
-                  : 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
-              } transition-all shadow-lg hover:shadow-xl disabled:opacity-50`}
+                  : 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600'
+              }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -384,7 +393,7 @@ export default function DevicesPage() {
               <motion.button
                 type="button"
                 onClick={resetForm}
-                className="px-6 py-3 rounded-lg bg-gradient-to-r from-slate-500 to-slate-600 text-white font-medium flex items-center gap-2 hover:from-slate-600 hover:to-slate-700 transition-all shadow-lg hover:shadow-xl"
+                className="px-6 py-3 rounded-lg btn-secondary text-white font-medium flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -396,31 +405,44 @@ export default function DevicesPage() {
         </form>
       </motion.div>
 
-      {/* Filters Section */}
       <motion.div 
-        className="bg-white rounded-xl shadow-lg border border-slate-100 p-4"
+        className="card p-4"
         variants={itemVariants}
         initial="hidden"
         animate="visible"
       >
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
               placeholder="Search devices..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border transition-all outline-none"
+              style={{ 
+                borderColor: 'var(--border-color)', 
+                backgroundColor: 'var(--input-bg)',
+                color: 'var(--text-primary)'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
             />
           </div>
           
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-slate-400" />
+            <Filter className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+              className="flex-1 px-4 py-2 rounded-lg border transition-all outline-none"
+              style={{ 
+                borderColor: 'var(--border-color)', 
+                backgroundColor: 'var(--input-bg)',
+                color: 'var(--text-primary)'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
             >
               <option value="all">All Status</option>
               <option value="active">Active Only</option>
@@ -429,11 +451,18 @@ export default function DevicesPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-slate-400" />
+            <Building2 className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
             <select
               value={officeFilter}
               onChange={(e) => setOfficeFilter(e.target.value)}
-              className="flex-1 px-4 py-2 rounded-lg border border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all outline-none"
+              className="flex-1 px-4 py-2 rounded-lg border transition-all outline-none"
+              style={{ 
+                borderColor: 'var(--border-color)', 
+                backgroundColor: 'var(--input-bg)',
+                color: 'var(--text-primary)'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
             >
               <option value="all">All Offices</option>
               {offices.map(office => (
@@ -444,9 +473,8 @@ export default function DevicesPage() {
         </div>
       </motion.div>
 
-      {/* Table Section */}
       <motion.div 
-        className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden"
+        className="card overflow-hidden"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -454,16 +482,16 @@ export default function DevicesPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gradient-to-r from-blue-50 to-cyan-50">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Device ID</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">API Key</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Office</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Actions</th>
+              <tr style={{ background: 'var(--orange-bg)' }}>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Device ID</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>API Key</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Office</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Actions</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
               <AnimatePresence>
                 {filteredDevices.map((device, index) => (
                   <motion.tr
@@ -477,25 +505,29 @@ export default function DevicesPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <motion.div 
-                          className="p-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-lg text-white"
+                          className="p-2 bg-gradient-to-r from-orange-500 to-amber-500 rounded-lg text-white"
                           whileHover={{ rotate: 360 }}
                           transition={{ duration: 0.3 }}
                         >
                           <HardDrive className="w-4 h-4" />
                         </motion.div>
-                        <span className="font-mono font-medium text-slate-900">{device.device_id}</span>
+                        <span className="font-mono font-medium" style={{ color: 'var(--text-primary)' }}>{device.device_id}</span>
                       </div>
                     </td>
                     
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <div className="relative group/key">
-                          <code className="px-2 py-1 bg-slate-100 rounded text-xs font-mono text-slate-600">
+                          <code 
+                            className="px-2 py-1 rounded text-xs font-mono"
+                            style={{ backgroundColor: 'var(--bg-secondary)', color: 'var(--text-secondary)' }}
+                          >
                             {device.api_key?.substring(0, 8)}...{device.api_key?.substring(device.api_key.length - 4)}
                           </code>
                           <motion.button
                             onClick={() => copyToClipboard(device.api_key)}
-                            className="ml-2 p-1 text-slate-400 hover:text-blue-600 transition-colors"
+                            className="ml-2 p-1 transition-colors"
+                            style={{ color: 'var(--text-muted)' }}
                             whileHover={{ scale: 1.1 }}
                             title="Copy API Key"
                           >
@@ -506,7 +538,8 @@ export default function DevicesPage() {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0 }}
-                              className="absolute left-0 -top-8 bg-slate-800 text-white text-xs px-2 py-1 rounded"
+                              className="absolute left-0 -top-8 text-white text-xs px-2 py-1 rounded"
+                              style={{ backgroundColor: 'var(--bg-primary)' }}
                             >
                               Copied!
                             </motion.span>
@@ -517,8 +550,8 @@ export default function DevicesPage() {
                     
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
-                        <Building2 className="w-4 h-4 text-slate-400" />
-                        <span className="text-slate-700">{getOfficeName(device.office_id)}</span>
+                        <Building2 className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
+                        <span style={{ color: 'var(--text-secondary)' }}>{getOfficeName(device.office_id)}</span>
                       </div>
                     </td>
                     
@@ -544,8 +577,9 @@ export default function DevicesPage() {
                       <div className="flex items-center gap-2">
                         <motion.button
                           onClick={() => handleEdit(device)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          whileHover={{ scale: 1.1 }}
+                          className="p-2 rounded-lg transition-colors"
+                          style={{ color: 'var(--orange-accent)' }}
+                          whileHover={{ scale: 1.1, backgroundColor: 'var(--orange-bg)' }}
                           whileTap={{ scale: 0.95 }}
                           title="Edit"
                         >
@@ -555,11 +589,11 @@ export default function DevicesPage() {
                         <motion.button
                           onClick={() => toggleStatus(device)}
                           disabled={actionLoading === device.device_id}
-                          className={`p-2 rounded-lg transition-colors ${
+                          className={`p-2 rounded-lg transition-colors disabled:opacity-50 ${
                             device.status 
                               ? 'text-yellow-600 hover:bg-yellow-50' 
                               : 'text-emerald-600 hover:bg-emerald-50'
-                          } disabled:opacity-50`}
+                          }`}
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.95 }}
                           title={device.status ? 'Deactivate' : 'Activate'}
@@ -607,10 +641,10 @@ export default function DevicesPage() {
                       transition={{ duration: 2, repeat: Infinity }}
                       className="inline-block"
                     >
-                      <HardDrive className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <HardDrive className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
                     </motion.div>
-                    <p className="text-slate-500 font-medium">No devices found</p>
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p className="font-medium" style={{ color: 'var(--text-secondary)' }}>No devices found</p>
+                    <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
                       {searchTerm || statusFilter !== 'all' || officeFilter !== 'all'
                         ? 'Try adjusting your filters'
                         : 'Register your first device to get started'}
@@ -622,16 +656,15 @@ export default function DevicesPage() {
           </table>
         </div>
 
-        {/* Footer */}
-        <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t">
+        <div className="px-6 py-4" style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)' }}>
           <div className="flex justify-between items-center">
-            <p className="text-sm text-slate-600">
-              Showing <span className="font-semibold text-blue-600">{filteredDevices.length}</span> of{' '}
-              <span className="font-semibold text-blue-600">{list.length}</span> devices
+            <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+              Showing <span style={{ color: 'var(--orange-accent)' }} className="font-semibold">{filteredDevices.length}</span> of{' '}
+              <span style={{ color: 'var(--orange-accent)' }} className="font-semibold">{list.length}</span> devices
             </p>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500">
-                Active: {list.filter(d => d.status).length} • Inactive: {list.filter(d => !d.status).length}
+              <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                Active: {list.filter(d => d.status).length} &bull; Inactive: {list.filter(d => !d.status).length}
               </span>
             </div>
           </div>

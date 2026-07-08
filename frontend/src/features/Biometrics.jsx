@@ -4,7 +4,7 @@ import client from '../api/client';
 export default function BiometricsPage() {
   return (
     <div className="space-y-6">
-      <h1 className="text-xl font-semibold text-slate-800">Biometric Enrollment (Admin only)</h1>
+      <h1 className="text-xl font-semibold" style={{ color: 'var(--text-primary)' }}>Biometric Enrollment (Admin only)</h1>
       <EnrollCard
         title="RFID Enroll"
         description="Assign an RFID UID to an employee ID"
@@ -51,25 +51,25 @@ function EnrollCard({ title, description, fields, endpoint }) {
   };
 
   return (
-    <div className="rounded-xl bg-white shadow-sm border border-slate-200 p-5">
-      <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
-      <p className="text-sm text-slate-600 mb-4">{description}</p>
+    <div className="card" style={{ backgroundColor: 'var(--card-bg)' }}>
+      <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>{title}</h2>
+      <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>{description}</p>
       <form className="grid gap-3 md:grid-cols-2" onSubmit={submit}>
         {fields.map((f) => (
-          <label key={f.key} className="text-sm text-slate-700 space-y-1">
+          <label key={f.key} className="text-sm space-y-1" style={{ color: 'var(--text-primary)' }}>
             <span className="block">{f.label}</span>
             <input
               value={form[f.key]}
               onChange={(e) => setForm({ ...form, [f.key]: e.target.value })}
               placeholder={f.placeholder}
-              className="w-full border border-slate-300 rounded-md px-3 py-2"
+              className="input-field"
               required
             />
           </label>
         ))}
         {error && <p className="text-red-600 col-span-2">{error}</p>}
         {message && <p className="text-green-600 col-span-2">{message}</p>}
-        <button type="submit" disabled={loading} className="bg-blue-600 text-white px-4 py-2 rounded-md">{loading ? 'Saving...' : 'Save'}</button>
+        <button type="submit" disabled={loading} className="btn-primary bg-gradient-to-br from-orange-500 to-amber-500">{loading ? 'Saving...' : 'Save'}</button>
       </form>
     </div>
   );

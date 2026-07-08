@@ -330,33 +330,34 @@ export default function EmployeesListPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-10 shadow-sm">
+      <div className="sticky top-0 z-10 shadow-sm" style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-primary)' }}>
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <button 
                 onClick={() => window.history.back()}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-black/5 rounded-lg transition-colors"
               >
-                <ArrowLeft className="h-5 w-5 text-gray-600" />
+                <ArrowLeft className="h-5 w-5" style={{ color: 'var(--text-secondary)' }} />
               </button>
               <div className="flex items-center gap-3">
-                <Shield className="h-8 w-8 text-blue-600" />
+                <Shield className="h-8 w-8" style={{ color: 'var(--accent)' }} />
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">Employees</h1>
-                  <p className="text-sm text-gray-500">Manage employees and biometrics</p>
+                  <h1 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>Employees</h1>
+                  <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>Manage employees and biometrics</p>
                 </div>
               </div>
             </div>
             <div className="flex gap-2">
               <button
                 onClick={loadEmployees}
-                className="p-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="p-2 border rounded-lg hover:bg-black/5 transition-colors"
+                style={{ borderColor: 'var(--border-primary)' }}
                 title="Refresh"
               >
-                <RefreshCw className="h-4 w-4 text-gray-600" />
+                <RefreshCw className="h-4 w-4" style={{ color: 'var(--text-secondary)' }} />
               </button>
             </div>
           </div>
@@ -382,19 +383,19 @@ export default function EmployeesListPage() {
         {/* Search and Filter */}
         <div className="mb-4 flex gap-3">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4" style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
               placeholder="Search by name, ID, email, position, gender, blood group, address..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+              className="input-field pl-9"
             />
           </div>
           <select
             value={selectedOffice}
             onChange={(e) => setSelectedOffice(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500"
+            className="input-field w-auto"
           >
             <option value="all">All Offices</option>
             {offices.map(office => (
@@ -406,7 +407,7 @@ export default function EmployeesListPage() {
               setSearchTerm("");
               setSelectedOffice("all");
             }}
-            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm"
+            className="btn-secondary"
           >
             Clear
           </button>
@@ -415,29 +416,29 @@ export default function EmployeesListPage() {
         {/* Employees Table */}
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <Loader className="h-8 w-8 text-blue-600 animate-spin" />
+            <Loader className="h-8 w-8 animate-spin" style={{ color: 'var(--accent)' }} />
           </div>
         ) : (
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+          <div className="card overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="table-header">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Personal Info</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Biometrics</th>
-                 
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <th className="px-6 py-3 text-left">Employee</th>
+                    <th className="px-6 py-3 text-left">Contact</th>
+                    <th className="px-6 py-3 text-left">Personal Info</th>
+                    <th className="px-6 py-3 text-left">Position</th>
+                    <th className="px-6 py-3 text-left">Biometrics</th>
+                  
+                    <th className="px-6 py-3 text-left">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
+                <tbody>
                   {currentItems.map((emp) => (
-                    <tr key={emp.id} className="hover:bg-gray-50 transition-colors">
+                    <tr key={emp.id} className="table-row">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium text-sm">
+                          <div className="h-10 w-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white font-medium text-sm">
                             {emp.photo ? (
                               <img src={emp.photo} alt={emp.name} className="h-10 w-10 rounded-full object-cover" />
                             ) : (
@@ -445,22 +446,22 @@ export default function EmployeesListPage() {
                             )}
                           </div>
                           <div>
-                            <div className="font-medium text-gray-900">{emp.name}</div>
-                            <div className="text-xs text-gray-500">EmpID: {emp.emp_id}</div>
+                            <div className="font-medium" style={{ color: 'var(--text-primary)' }}>{emp.name}</div>
+                            <div className="text-xs" style={{ color: 'var(--text-secondary)' }}>EmpID: {emp.emp_id}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm space-y-1">
-                          <div className="flex items-center gap-1 text-gray-600">
+                          <div className="flex items-center gap-1" style={{ color: 'var(--text-secondary)' }}>
                             <Mail className="h-3 w-3" />
                             <span className="truncate max-w-[150px]" title={emp.email}>{emp.email || '-'}</span>
                           </div>
-                          <div className="flex items-center gap-1 text-gray-600">
+                          <div className="flex items-center gap-1" style={{ color: 'var(--text-secondary)' }}>
                             <Phone className="h-3 w-3" />
                             <span>{emp.phone || '-'}</span>
                           </div>
-                          <div className="flex items-center gap-1 text-gray-600">
+                          <div className="flex items-center gap-1" style={{ color: 'var(--text-secondary)' }}>
                             <MapPin className="h-3 w-3" />
                             <span className="truncate max-w-[150px]" title={emp.address}>{emp.address || '-'}</span>
                           </div>
@@ -469,7 +470,7 @@ export default function EmployeesListPage() {
                       <td className="px-6 py-4">
                         <div className="text-sm space-y-1">
                           <div className="flex items-center gap-1">
-                            <Users className="h-3 w-3 text-gray-400" />
+                            <Users className="h-3 w-3" style={{ color: 'var(--text-muted)' }} />
                             <span className="capitalize">{emp.gender || 'Not specified'}</span>
                           </div>
                           <div className="flex items-center gap-1">
@@ -481,9 +482,9 @@ export default function EmployeesListPage() {
                       </td>
                       <td className="px-6 py-4">
                         <div>
-                          <div className="text-sm font-medium text-gray-900">{emp.position}</div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            <span className="px-2 py-1 bg-blue-50 text-blue-700 rounded-full inline-block">
+                          <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>{emp.position}</div>
+                          <div className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>
+                            <span className="px-2 py-1 rounded-full inline-block" style={{ backgroundColor: 'var(--accent-light)', color: 'var(--accent)' }}>
                               {getOfficeName(emp.office_id)}
                             </span>
                           </div>
@@ -510,7 +511,7 @@ export default function EmployeesListPage() {
                             </span>
                           )}
                           {!hasRFID(emp) && !hasFingerprint(emp) && !hasFace(emp) && (
-                            <span className="text-xs text-gray-400">No biometrics</span>
+                            <span className="text-xs" style={{ color: 'var(--text-muted)' }}>No biometrics</span>
                           )}
                         </div>
                       </td>
@@ -519,7 +520,8 @@ export default function EmployeesListPage() {
                         <div className="flex gap-2">
                           <button
                             onClick={() => openViewModal(emp)}
-                            className="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-1.5 rounded-lg transition-colors"
+                            style={{ color: 'var(--accent)' }}
                             title="View"
                           >
                             <Eye className="h-4 w-4" />
@@ -545,7 +547,7 @@ export default function EmployeesListPage() {
 
                   {currentItems.length === 0 && (
                     <tr>
-                      <td colSpan="7" className="px-6 py-12 text-center text-gray-500">
+                      <td colSpan="7" className="px-6 py-12 text-center" style={{ color: 'var(--text-secondary)' }}>
                         No employees found
                       </td>
                     </tr>
@@ -556,25 +558,27 @@ export default function EmployeesListPage() {
 
             {/* Pagination */}
             {filteredEmployees.length > 0 && (
-              <div className="px-6 py-4 border-t flex items-center justify-between">
-                <p className="text-sm text-gray-500">
+              <div className="px-6 py-4 border-t flex items-center justify-between" style={{ borderColor: 'var(--border-primary)' }}>
+                <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
                   Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredEmployees.length)} of {filteredEmployees.length}
                 </p>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="p-2 border rounded-lg disabled:opacity-50 hover:bg-gray-50 transition-colors"
+                    className="p-2 border rounded-lg disabled:opacity-50 hover:bg-black/5 transition-colors"
+                    style={{ borderColor: 'var(--border-primary)' }}
                   >
                     <ChevronLeft className="h-4 w-4" />
                   </button>
-                  <span className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm">
+                  <span className="px-4 py-2 rounded-lg text-sm" style={{ backgroundColor: 'var(--accent)', color: 'white' }}>
                     {currentPage} / {totalPages}
                   </span>
                   <button
                     onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="p-2 border rounded-lg disabled:opacity-50 hover:bg-gray-50 transition-colors"
+                    className="p-2 border rounded-lg disabled:opacity-50 hover:bg-black/5 transition-colors"
+                    style={{ borderColor: 'var(--border-primary)' }}
                   >
                     <ChevronRight className="h-4 w-4" />
                   </button>
@@ -586,8 +590,8 @@ export default function EmployeesListPage() {
 
         {/* Inline Edit Form */}
         {showEditForm && (
-          <div id="edit-form" className="mt-6 bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+          <div id="edit-form" className="mt-6 card overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-amber-500 px-6 py-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-white flex items-center gap-2">
                   <Edit className="h-5 w-5" />
@@ -606,62 +610,63 @@ export default function EmployeesListPage() {
             <form onSubmit={handleEditSubmit} className="p-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Employee ID</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Employee ID</label>
                   <input
                     value={editForm.emp_id}
                     disabled
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm bg-gray-50"
+                    className="w-full input-field"
+                    style={{ backgroundColor: 'var(--bg-tertiary)' }}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Full Name *</label>
                   <input
                     required
                     value={editForm.name}
                     onChange={e => setEditForm({...editForm, name: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full input-field"
                     placeholder="Enter full name"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Email</label>
                   <input
                     type="email"
                     value={editForm.email}
                     onChange={e => setEditForm({...editForm, email: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                     placeholder="email@example.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Phone</label>
                   <input
                     value={editForm.phone}
                     onChange={e => setEditForm({...editForm, phone: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                     placeholder="+91 9876543210"
                   />
                 </div>
 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Address</label>
                   <input
                     value={editForm.address}
                     onChange={e => setEditForm({...editForm, address: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                     placeholder="Enter address"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Gender</label>
                   <select
                     value={editForm.gender}
                     onChange={e => setEditForm({...editForm, gender: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                   >
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
@@ -671,54 +676,54 @@ export default function EmployeesListPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Blood Group</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Blood Group</label>
                   <input
                     value={editForm.blood_group}
                     onChange={e => setEditForm({...editForm, blood_group: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                     placeholder="O+"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Date of Birth</label>
                   <input
                     type="date"
                     value={editForm.date_of_birth}
                     onChange={e => setEditForm({...editForm, date_of_birth: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Joined Date *</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Joined Date *</label>
                   <input
                     type="date"
                     required
                     value={editForm.joined_date}
                     onChange={e => setEditForm({...editForm, joined_date: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Position *</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Position *</label>
                   <input
                     required
                     value={editForm.position}
                     onChange={e => setEditForm({...editForm, position: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                     placeholder="Software Engineer"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Office *</label>
+                  <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>Office *</label>
                   <select
                     required
                     value={editForm.office_id}
                     onChange={e => setEditForm({...editForm, office_id: e.target.value})}
-                    className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm"
+                    className="w-full input-field"
                   >
                     <option value="">Select Office</option>
                     {offices.map(o => (
@@ -729,29 +734,35 @@ export default function EmployeesListPage() {
               </div>
 
               {/* Biometric Enrollment Section */}
-              <div className="mt-8 pt-6 border-t border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                  <Fingerprint className="h-5 w-5 text-blue-600" />
+              <div className="mt-8 pt-6 border-t" style={{ borderColor: 'var(--border-primary)' }}>
+                <h3 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
+                  <Fingerprint className="h-5 w-5" style={{ color: 'var(--accent)' }} />
                   Capture New Biometrics
                 </h3>
                 
-                <p className="text-sm text-gray-500 mb-4">
+                <p className="text-sm mb-4" style={{ color: 'var(--text-secondary)' }}>
                   Click buttons to capture new biometric data. This will update the employee's records.
                 </p>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* RFID */}
                   <div className="space-y-3">
-                    <label className="block text-sm font-medium text-gray-700">RFID Card</label>
+                    <label className="block text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>RFID Card</label>
                     <button
                       type="button"
                       onClick={() => captureBiometric('rfid')}
                       disabled={enrollingBio.waiting}
-                      className={`w-full px-4 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                      className={`w-full px-4 py-3 rounded-lg transition-colors flex items-center justify-center gap-2 disabled:opacity-50 ${
                         enrollingBio.waiting && enrollingBio.type === 'rfid'
-                          ? 'bg-purple-100 text-purple-700 animate-pulse'
-                          : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
-                      } disabled:opacity-50`}
+                          ? 'animate-pulse'
+                          : ''
+                      }`}
+                      style={{
+                        backgroundColor: 'var(--accent-light)',
+                        color: 'var(--accent)',
+                        borderColor: 'var(--accent)',
+                        borderWidth: '1px'
+                      }}
                     >
                       {enrollingBio.waiting && enrollingBio.type === 'rfid' ? (
                         <>
@@ -769,7 +780,7 @@ export default function EmployeesListPage() {
 
                   {/* Fingerprint */}
                   <div className="space-y-3">
-                    <label className="block text-sm font-medium text-gray-700">Fingerprints</label>
+                    <label className="block text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Fingerprints</label>
                     <div className="grid grid-cols-2 gap-2">
                       {[1, 2, 3, 4].map(i => (
                         <button
@@ -777,11 +788,19 @@ export default function EmployeesListPage() {
                           type="button"
                           onClick={() => captureBiometric('finger', i)}
                           disabled={enrollingBio.waiting}
-                          className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
                             enrollingBio.waiting && enrollingBio.type === 'finger' && enrollingBio.index === i
-                              ? 'bg-blue-100 text-blue-700 animate-pulse'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          } disabled:opacity-50`}
+                              ? 'animate-pulse'
+                              : ''
+                          }`}
+                          style={{
+                            backgroundColor: enrollingBio.waiting && enrollingBio.type === 'finger' && enrollingBio.index === i
+                              ? 'var(--accent-light)'
+                              : 'var(--bg-tertiary)',
+                            color: enrollingBio.waiting && enrollingBio.type === 'finger' && enrollingBio.index === i
+                              ? 'var(--accent)'
+                              : 'var(--text-secondary)'
+                          }}
                         >
                           {enrollingBio.waiting && enrollingBio.type === 'finger' && enrollingBio.index === i ? (
                             <Loader className="h-4 w-4 animate-spin mx-auto" />
@@ -795,7 +814,7 @@ export default function EmployeesListPage() {
 
                   {/* Face */}
                   <div className="space-y-3">
-                    <label className="block text-sm font-medium text-gray-700">Face Recognition</label>
+                    <label className="block text-sm font-medium" style={{ color: 'var(--text-secondary)' }}>Face Recognition</label>
                     <div className="grid grid-cols-3 gap-2">
                       {[1, 2, 3, 4, 5].map(i => (
                         <button
@@ -803,11 +822,19 @@ export default function EmployeesListPage() {
                           type="button"
                           onClick={() => captureBiometric('face', i)}
                           disabled={enrollingBio.waiting}
-                          className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                          className={`px-3 py-2.5 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 ${
                             enrollingBio.waiting && enrollingBio.type === 'face' && enrollingBio.index === i
-                              ? 'bg-blue-100 text-blue-700 animate-pulse'
-                              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                          } disabled:opacity-50`}
+                              ? 'animate-pulse'
+                              : ''
+                          }`}
+                          style={{
+                            backgroundColor: enrollingBio.waiting && enrollingBio.type === 'face' && enrollingBio.index === i
+                              ? 'var(--accent-light)'
+                              : 'var(--bg-tertiary)',
+                            color: enrollingBio.waiting && enrollingBio.type === 'face' && enrollingBio.index === i
+                              ? 'var(--accent)'
+                              : 'var(--text-secondary)'
+                          }}
                         >
                           {enrollingBio.waiting && enrollingBio.type === 'face' && enrollingBio.index === i ? (
                             <Loader className="h-4 w-4 animate-spin mx-auto" />
@@ -822,7 +849,7 @@ export default function EmployeesListPage() {
 
                 {/* Waiting Hint */}
                 {enrollingBio.waiting && (
-                  <div className="mt-4 p-3 bg-blue-50 text-blue-700 text-sm rounded-lg text-center animate-pulse">
+                  <div className="mt-4 p-3 text-sm rounded-lg text-center animate-pulse" style={{ backgroundColor: 'var(--accent-light)', color: 'var(--accent)' }}>
                     ⏳ Waiting for {getBioType(enrollingBio.type)} {enrollingBio.index || ''}...
                     Please perform the action on the hardware.
                   </div>
@@ -830,18 +857,18 @@ export default function EmployeesListPage() {
               </div>
 
               {/* Form Actions */}
-              <div className="mt-8 pt-6 border-t border-gray-200 flex justify-end gap-3">
+              <div className="mt-8 pt-6 border-t flex justify-end gap-3" style={{ borderColor: 'var(--border-primary)' }}>
                 <button
                   type="button"
                   onClick={closeEditForm}
-                  className="px-6 py-2.5 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-sm font-medium"
+                  className="btn-secondary"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 transition-colors text-sm font-medium"
+                  className="btn-primary disabled:opacity-50"
                 >
                   {loading ? (
                     <>
@@ -864,20 +891,20 @@ export default function EmployeesListPage() {
       {/* View Employee Modal */}
       {showViewModal && viewingEmployee && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="sticky top-0 bg-white border-b px-6 py-4 flex justify-between items-center">
-              <h2 className="text-lg font-semibold">Employee Details</h2>
+          <div className="card shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="sticky top-0 px-6 py-4 flex justify-between items-center" style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-primary)' }}>
+              <h2 className="text-lg font-semibold" style={{ color: 'var(--text-primary)' }}>Employee Details</h2>
               <button 
                 onClick={() => setShowViewModal(false)} 
-                className="p-2 hover:bg-gray-100 rounded-lg"
+                className="p-2 hover:bg-black/5 rounded-lg"
               >
-                <X className="h-5 w-5 text-gray-500" />
+                <X className="h-5 w-5" style={{ color: 'var(--text-secondary)' }} />
               </button>
             </div>
 
             <div className="p-6">
               <div className="flex items-center gap-4 mb-6">
-                <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-bold text-xl">
+                <div className="h-16 w-16 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-white font-bold text-xl">
                   {viewingEmployee.photo ? (
                     <img src={viewingEmployee.photo} alt={viewingEmployee.name} className="h-16 w-16 rounded-full object-cover" />
                   ) : (
@@ -885,60 +912,60 @@ export default function EmployeesListPage() {
                   )}
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-gray-900">{viewingEmployee.name}</h3>
-                  <p className="text-gray-500">ID: {viewingEmployee.emp_id}</p>
+                  <h3 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>{viewingEmployee.name}</h3>
+                  <p style={{ color: 'var(--text-secondary)' }}>ID: {viewingEmployee.emp_id}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs text-gray-500">Email</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Email</label>
                   <p className="text-sm font-medium">{viewingEmployee.email || '-'}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Phone</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Phone</label>
                   <p className="text-sm font-medium">{viewingEmployee.phone || '-'}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Address</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Address</label>
                   <p className="text-sm font-medium">{viewingEmployee.address || '-'}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Gender</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Gender</label>
                   <p className="text-sm font-medium">{viewingEmployee.gender || '-'}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Blood Group</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Blood Group</label>
                   <p className="text-sm font-medium">{viewingEmployee.blood_group || '-'}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Date of Birth</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Date of Birth</label>
                   <p className="text-sm font-medium">{formatDate(viewingEmployee.date_of_birth)}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Position</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Position</label>
                   <p className="text-sm font-medium">{viewingEmployee.position}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Office</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Office</label>
                   <p className="text-sm font-medium">{getOfficeName(viewingEmployee.office_id)}</p>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500">Joined Date</label>
+                  <label className="text-xs" style={{ color: 'var(--text-secondary)' }}>Joined Date</label>
                   <p className="text-sm font-medium">{formatDate(viewingEmployee.joined_date)}</p>
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t">
+              <div className="mt-6 pt-4 border-t" style={{ borderColor: 'var(--border-primary)' }}>
                 <h4 className="font-medium mb-2">Biometrics</h4>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <CreditCard className={`h-4 w-4 ${hasRFID(viewingEmployee) ? 'text-purple-600' : 'text-gray-300'}`} />
+                    <CreditCard className={`h-4 w-4 ${hasRFID(viewingEmployee) ? 'text-purple-600' : ''}`} style={{ color: hasRFID(viewingEmployee) ? undefined : 'var(--text-muted)' }} />
                     <span className="text-sm">{hasRFID(viewingEmployee) ? `RFID: ${viewingEmployee.rfid_uid}` : 'No RFID'}</span>
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <Fingerprint className={`h-4 w-4 ${hasFingerprint(viewingEmployee) ? 'text-green-600' : 'text-gray-300'}`} />
+                    <Fingerprint className={`h-4 w-4 ${hasFingerprint(viewingEmployee) ? 'text-green-600' : ''}`} style={{ color: hasFingerprint(viewingEmployee) ? undefined : 'var(--text-muted)' }} />
                     <span className="text-sm">
                       {hasFingerprint(viewingEmployee) 
                         ? `Fingerprints: ${getFingerprintCount(viewingEmployee)}/4` 
@@ -947,7 +974,7 @@ export default function EmployeesListPage() {
                   </div>
                   
                   <div className="flex items-center gap-2">
-                    <Camera className={`h-4 w-4 ${hasFace(viewingEmployee) ? 'text-orange-600' : 'text-gray-300'}`} />
+                    <Camera className={`h-4 w-4 ${hasFace(viewingEmployee) ? 'text-orange-600' : ''}`} style={{ color: hasFace(viewingEmployee) ? undefined : 'var(--text-muted)' }} />
                     <span className="text-sm">
                       {hasFace(viewingEmployee) 
                         ? `Face Images: ${getFaceCount(viewingEmployee)}/5` 
@@ -960,7 +987,7 @@ export default function EmployeesListPage() {
               <div className="mt-6 flex justify-end">
                 <button
                   onClick={() => setShowViewModal(false)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="btn-primary"
                 >
                   Close
                 </button>
@@ -973,19 +1000,19 @@ export default function EmployeesListPage() {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && employeeToDelete && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+          <div className="card shadow-2xl max-w-md w-full p-6">
             <div className="flex items-center gap-3 text-red-600 mb-4">
               <AlertCircle className="h-6 w-6" />
               <h3 className="text-lg font-semibold">Confirm Delete</h3>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="mb-6" style={{ color: 'var(--text-secondary)' }}>
               Are you sure you want to delete <span className="font-semibold">{employeeToDelete.name}</span>? 
               This action cannot be undone.
             </p>
             <div className="flex justify-end gap-3">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 border rounded-lg hover:bg-gray-50"
+                className="btn-secondary"
               >
                 Cancel
               </button>

@@ -15,7 +15,6 @@ import {
 } from 'lucide-react';
 import client from '../api/client';
 
-// Animation variants
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
@@ -53,7 +52,7 @@ const tableRowVariants = {
   },
   hover: {
     scale: 1.01,
-    backgroundColor: "rgba(99, 102, 241, 0.05)",
+    backgroundColor: "rgba(249, 115, 22, 0.05)",
     transition: {
       type: "spring",
       stiffness: 400,
@@ -71,7 +70,7 @@ export default function OfficesPage() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'inactive'
+  const [statusFilter, setStatusFilter] = useState('all');
   const [deleteLoading, setDeleteLoading] = useState(null);
 
   const load = async () => {
@@ -118,7 +117,6 @@ export default function OfficesPage() {
       resetForm();
       await load();
       
-      // Clear success message after 3 seconds
       setTimeout(() => setSuccess(''), 3000);
     } catch (err) {
       setError(err.response?.data?.detail || 'Operation failed');
@@ -132,7 +130,6 @@ export default function OfficesPage() {
     setName(office.name);
     setLocation(office.location || '');
     setError('');
-    // Scroll to form
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -154,7 +151,6 @@ export default function OfficesPage() {
     }
   };
 
-  // Filter offices based on search and status
   const filteredOffices = list.filter(office => {
     const matchesSearch = office.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (office.location && office.location.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -171,9 +167,8 @@ export default function OfficesPage() {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
-      {/* Header Section */}
       <motion.div 
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 p-8 shadow-xl"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 p-8 shadow-xl"
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ type: "spring", stiffness: 100 }}
@@ -212,7 +207,6 @@ export default function OfficesPage() {
         </div>
       </motion.div>
 
-      {/* Messages */}
       <AnimatePresence>
         {error && (
           <motion.div 
@@ -242,23 +236,22 @@ export default function OfficesPage() {
         )}
       </AnimatePresence>
 
-      {/* Form Section */}
       <motion.div 
-        className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden"
+        className="card overflow-hidden"
         variants={itemVariants}
         initial="hidden"
         animate="visible"
       >
-        <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-b">
-          <h2 className="font-semibold text-slate-800 flex items-center gap-2">
+        <div className="px-6 py-4" style={{ backgroundColor: 'var(--bg-secondary)', borderBottom: '1px solid var(--border-color)' }}>
+          <h2 className="font-semibold flex items-center gap-2" style={{ color: 'var(--text-primary)' }}>
             {editingId ? (
               <>
-                <Pencil className="w-4 h-4 text-yellow-600" />
+                <Pencil className="w-4 h-4" style={{ color: 'var(--orange-accent)' }} />
                 Edit Office
               </>
             ) : (
               <>
-                <Plus className="w-4 h-4 text-indigo-600" />
+                <Plus className="w-4 h-4" style={{ color: 'var(--orange-accent)' }} />
                 Add New Office
               </>
             )}
@@ -271,17 +264,24 @@ export default function OfficesPage() {
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
                 Office Name <span className="text-red-500">*</span>
               </label>
               <div className="relative">
-                <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
                   placeholder="Enter office name"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border transition-all outline-none"
+                  style={{ 
+                    borderColor: 'var(--border-color)', 
+                    backgroundColor: 'var(--input-bg)',
+                    color: 'var(--text-primary)'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
               </div>
             </motion.div>
@@ -290,16 +290,23 @@ export default function OfficesPage() {
               whileHover={{ scale: 1.02 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-secondary)' }}>
                 Location
               </label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
                 <input
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Enter location"
-                  className="w-full pl-10 pr-4 py-3 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+                  className="w-full pl-10 pr-4 py-3 rounded-lg border transition-all outline-none"
+                  style={{ 
+                    borderColor: 'var(--border-color)', 
+                    backgroundColor: 'var(--input-bg)',
+                    color: 'var(--text-primary)'
+                  }}
+                  onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+                  onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
                 />
               </div>
             </motion.div>
@@ -309,11 +316,11 @@ export default function OfficesPage() {
             <motion.button
               type="submit"
               disabled={loading}
-              className={`px-6 py-3 rounded-lg text-white font-medium flex items-center gap-2 ${
+              className={`px-6 py-3 rounded-lg text-white font-medium flex items-center gap-2 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 ${
                 editingId 
                   ? 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600' 
-                  : 'bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600'
-              } transition-all shadow-lg hover:shadow-xl disabled:opacity-50`}
+                  : 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600'
+              }`}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -333,7 +340,7 @@ export default function OfficesPage() {
               <motion.button
                 type="button"
                 onClick={resetForm}
-                className="px-6 py-3 rounded-lg bg-gradient-to-r from-slate-500 to-slate-600 text-white font-medium flex items-center gap-2 hover:from-slate-600 hover:to-slate-700 transition-all shadow-lg hover:shadow-xl"
+                className="px-6 py-3 rounded-lg btn-secondary text-white font-medium flex items-center gap-2 transition-all shadow-lg hover:shadow-xl"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
@@ -345,31 +352,44 @@ export default function OfficesPage() {
         </form>
       </motion.div>
 
-      {/* Search and Filter Section */}
       <motion.div 
-        className="bg-white rounded-xl shadow-lg border border-slate-100 p-4"
+        className="card p-4"
         variants={itemVariants}
         initial="hidden"
         animate="visible"
       >
         <div className="flex flex-col sm:flex-row gap-4">
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5" style={{ color: 'var(--text-muted)' }} />
             <input
               type="text"
               placeholder="Search offices..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+              className="w-full pl-10 pr-4 py-2 rounded-lg border transition-all outline-none"
+              style={{ 
+                borderColor: 'var(--border-color)', 
+                backgroundColor: 'var(--input-bg)',
+                color: 'var(--text-primary)'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
             />
           </div>
           
           <div className="flex items-center gap-2">
-            <Filter className="w-5 h-5 text-slate-400" />
+            <Filter className="w-5 h-5" style={{ color: 'var(--text-muted)' }} />
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="px-4 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all outline-none"
+              className="px-4 py-2 rounded-lg border transition-all outline-none"
+              style={{ 
+                borderColor: 'var(--border-color)', 
+                backgroundColor: 'var(--input-bg)',
+                color: 'var(--text-primary)'
+              }}
+              onFocus={(e) => e.target.style.borderColor = 'var(--orange-accent)'}
+              onBlur={(e) => e.target.style.borderColor = 'var(--border-color)'}
             >
               <option value="all">All Status</option>
               <option value="active">Active Only</option>
@@ -379,9 +399,8 @@ export default function OfficesPage() {
         </div>
       </motion.div>
 
-      {/* Table Section */}
       <motion.div 
-        className="bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden"
+        className="card overflow-hidden"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
@@ -389,15 +408,15 @@ export default function OfficesPage() {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="bg-gradient-to-r from-indigo-50 to-purple-50">
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Office Name</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Location</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-left text-xs font-semibold text-slate-600 uppercase tracking-wider">Actions</th>
+              <tr style={{ background: 'var(--orange-bg)' }}>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Office Name</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Location</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Status</th>
+                <th className="px-6 py-4 text-left text-xs font-semibold uppercase tracking-wider" style={{ color: 'var(--text-secondary)' }}>Actions</th>
               </tr>
             </thead>
 
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y" style={{ borderColor: 'var(--border-color)' }}>
               <AnimatePresence>
                 {filteredOffices.map((office, index) => (
                   <motion.tr
@@ -411,19 +430,19 @@ export default function OfficesPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <motion.div 
-                          className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg text-white"
+                          className="p-2 bg-gradient-to-r from-orange-500 to-amber-500 rounded-lg text-white"
                           whileHover={{ rotate: 360 }}
                           transition={{ duration: 0.3 }}
                         >
                           <Building2 className="w-4 h-4" />
                         </motion.div>
-                        <span className="font-medium text-slate-900">{office.name}</span>
+                        <span className="font-medium" style={{ color: 'var(--text-primary)' }}>{office.name}</span>
                       </div>
                     </td>
                     
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2 text-slate-600">
-                        <MapPin className="w-4 h-4 text-slate-400" />
+                      <div className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+                        <MapPin className="w-4 h-4" style={{ color: 'var(--text-muted)' }} />
                         {office.location || '-'}
                       </div>
                     </td>
@@ -446,8 +465,9 @@ export default function OfficesPage() {
                       <div className="flex items-center gap-2">
                         <motion.button
                           onClick={() => handleEdit(office)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
-                          whileHover={{ scale: 1.1 }}
+                          className="p-2 rounded-lg transition-colors"
+                          style={{ color: 'var(--orange-accent)' }}
+                          whileHover={{ scale: 1.1, backgroundColor: 'var(--orange-bg)' }}
                           whileTap={{ scale: 0.95 }}
                           title="Edit"
                         >
@@ -492,10 +512,10 @@ export default function OfficesPage() {
                       transition={{ duration: 2, repeat: Infinity }}
                       className="inline-block"
                     >
-                      <Building2 className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                      <Building2 className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--text-muted)' }} />
                     </motion.div>
-                    <p className="text-slate-500 font-medium">No offices found</p>
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p className="font-medium" style={{ color: 'var(--text-secondary)' }}>No offices found</p>
+                    <p className="text-sm mt-1" style={{ color: 'var(--text-muted)' }}>
                       {searchTerm || statusFilter !== 'all' 
                         ? 'Try adjusting your filters' 
                         : 'Add your first office to get started'}
@@ -507,11 +527,10 @@ export default function OfficesPage() {
           </table>
         </div>
 
-        {/* Footer */}
-        <div className="bg-gradient-to-r from-slate-50 to-slate-100 px-6 py-4 border-t">
-          <p className="text-sm text-slate-600">
-            Showing <span className="font-semibold text-indigo-600">{filteredOffices.length}</span> of{' '}
-            <span className="font-semibold text-indigo-600">{list.length}</span> offices
+        <div className="px-6 py-4" style={{ backgroundColor: 'var(--bg-secondary)', borderTop: '1px solid var(--border-color)' }}>
+          <p className="text-sm" style={{ color: 'var(--text-secondary)' }}>
+            Showing <span className="font-semibold" style={{ color: 'var(--orange-accent)' }}>{filteredOffices.length}</span> of{' '}
+            <span className="font-semibold" style={{ color: 'var(--orange-accent)' }}>{list.length}</span> offices
           </p>
         </div>
       </motion.div>

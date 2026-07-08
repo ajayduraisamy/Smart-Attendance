@@ -25,11 +25,11 @@ export default function LeavePage() {
 
   return (
     <div>
-      <h1 className="text-xl font-semibold mb-4">Leave Requests</h1>
+      <h1 className="text-xl font-semibold mb-4" style={{ color: 'var(--text-primary)' }}>Leave Requests</h1>
 
-      <table className="w-full bg-white shadow-sm rounded-xl">
+      <table className="card w-full">
         <thead>
-          <tr className="text-left border-b">
+          <tr className="text-left border-b" style={{ borderColor: 'var(--border-color)' }}>
             <th className="p-3">Employee</th>
             <th className="p-3">Start</th>
             <th className="p-3">End</th>
@@ -41,7 +41,7 @@ export default function LeavePage() {
 
         <tbody>
           {leaves.map((l) => (
-            <tr key={l.id} className="border-b">
+            <tr key={l.id} className="border-b" style={{ borderColor: 'var(--border-color)' }}>
 
               <td className="p-3">{l.emp_id}</td>
               <td className="p-3">{l.start_date}</td>
@@ -52,7 +52,7 @@ export default function LeavePage() {
               <td className="p-3 space-x-2">
                 <button
                   onClick={() => approve(l.id)}
-                  className="bg-green-600 text-white px-3 py-1 rounded"
+                  className="bg-gradient-to-br from-orange-500 to-amber-500 text-white px-3 py-1 rounded"
                 >
                   Approve
                 </button>
