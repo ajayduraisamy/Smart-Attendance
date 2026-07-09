@@ -75,7 +75,7 @@ export default function AddEmployeePage() {
 
   const loadOffices = async () => {
     try {
-      const res = await client.get("/offices/");
+      const res = await client.get("/offices");
       setOffices(res.data);
     } catch (err) {
       console.error("Failed to load offices:", err);
