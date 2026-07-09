@@ -20,7 +20,7 @@ router = APIRouter(
 # =====================================================
 # Admin: Create Device
 # =====================================================
-@router.post("/", response_model=DeviceOut)
+@router.post("", response_model=DeviceOut)
 def create_device(
     data: DeviceCreate,
     db: Session = Depends(get_db),
@@ -62,12 +62,11 @@ def create_device(
 # =====================================================
 # Admin: Get All Devices
 # =====================================================
-@router.get("/", response_model=list[DeviceOut])
+@router.get("", response_model=list[DeviceOut])
 def get_devices(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))
 ):
-
     return db.query(Device).all()
 
 

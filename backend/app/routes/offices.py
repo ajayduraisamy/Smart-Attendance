@@ -21,7 +21,7 @@ router = APIRouter(
 # =====================================================
 # CREATE OFFICE (ADMIN ONLY)
 # =====================================================
-@router.post("/", response_model=OfficeOut)
+@router.post("", response_model=OfficeOut)
 def create_office_route(
     data: OfficeCreate,
     db: Session = Depends(get_db),
@@ -37,7 +37,7 @@ def create_office_route(
 # =====================================================
 # LIST ACTIVE OFFICES
 # =====================================================
-@router.get("/", response_model=list[OfficeOut])
+@router.get("", response_model=list[OfficeOut])
 def list_offices(
     db: Session = Depends(get_db),
     user=Depends(require_role("admin"))

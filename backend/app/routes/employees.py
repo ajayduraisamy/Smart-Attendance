@@ -30,7 +30,7 @@ def require_admin_or_hr(user=Depends(get_current_user)):
 # =====================================================
 # Create Employee
 # =====================================================
-@router.post("/", response_model=EmployeeOut)
+@router.post("", response_model=EmployeeOut)
 def create_employee(
     data: EmployeeCreate,
     db: Session = Depends(get_db),
@@ -188,7 +188,7 @@ def update_employee_status(
 # =====================================================
 # List Employees
 # =====================================================
-@router.get("/", response_model=list[EmployeeOut])
+@router.get("", response_model=list[EmployeeOut])
 def list_employees(
     active_only: bool = Query(True),
     db: Session = Depends(get_db),

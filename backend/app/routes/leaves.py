@@ -98,7 +98,7 @@ def reject_leave(
 # =====================================================
 # List All Leaves
 # =====================================================
-@router.get("/", response_model=list[LeaveOut])
+@router.get("", response_model=list[LeaveOut])
 def list_leaves(
     db: Session = Depends(get_db),
     user=Depends(get_current_user)
