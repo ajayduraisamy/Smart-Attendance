@@ -45,13 +45,17 @@ def unhandled_exception_handler(_: Request, exc: Exception):
     )
 
 
-# Create tables
-user.Base.metadata.create_all(bind=engine)
-employee.Base.metadata.create_all(bind=engine)
-device.Base.metadata.create_all(bind=engine)
-office.Base.metadata.create_all(bind=engine)
-attendance.Base.metadata.create_all(bind=engine)
-leave.Base.metadata.create_all(bind=engine)
+# Create tables (with retry support)
+try:
+    user.Base.metadata.create_all(bind=engine)
+    employee.Base.metadata.create_all(bind=engine)
+    device.Base.metadata.create_all(bind=engine)
+    office.Base.metadata.create_all(bind=engine)
+    attendance.Base.metadata.create_all(bind=engine)
+    leave.Base.metadata.create_all(bind=engine)
+except Exception as e:
+    print(f"⚠️  Could not create tables: {e}")
+    print("   The API will still start, but DB operations may fail.")
 
 
 

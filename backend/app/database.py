@@ -6,8 +6,9 @@ from app.config import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD
 # ===============================
 # DATABASE URL
 # ===============================
+DB_PORT = DB_PORT or 3306
 DATABASE_URL = (
-    f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT or 5432}/{DB_NAME}"
+    f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 )
 
 # ===============================
