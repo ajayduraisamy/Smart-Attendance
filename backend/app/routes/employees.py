@@ -47,6 +47,16 @@ def create_employee(
             detail="Employee ID already exists"
         )
 
+    if data.email:
+        email_exists = db.query(Employee).filter(
+            Employee.email == data.email
+        ).first()
+        if email_exists:
+            raise HTTPException(
+                status_code=400,
+                detail="Email already exists"
+            )
+
     office = db.query(Office).filter(
         Office.id == data.office_id,
         Office.status == True

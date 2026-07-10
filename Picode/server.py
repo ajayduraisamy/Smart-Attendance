@@ -27,7 +27,7 @@ VERIFY_ENDPOINT = f"{API_URL}/hardware/verify-and-record"
 SYNC_ENDPOINT = f"{API_URL}/hardware/sync-attendance"
 DEVICE_ID = "Aislyn001"
 DEVICE_API_KEY = ""  # Set this to your device API key
-DB_NAME = "office_system.db"
+DB_NAME = "smart_attendance.db"
 
 
 def device_headers():
